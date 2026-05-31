@@ -1,0 +1,29 @@
+.intro-module {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 4rem 1rem;
+}
+
+.intro-text {
+  font-size: 1.3rem;
+  line-height: 1.7;
+  color: #d0d0d0;
+  max-width: 420px;
+}
+
+.intro-btn {
+  padding: .8rem 2.5rem;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .2s;
+  box-shadow: 0 4px 16px rgba(231,76,60,.3);
+}
+.intro-btn:hover { transform: scale(1.05); }

@@ -1,0 +1,20 @@
+<div class="coin-module">
+  <div class="coin-label" [class.label-capture]="labelClass() === 'label-capture'" [class.label-flee]="labelClass() === 'label-flee'">
+    {{ label() }}
+  </div>
+  <div class="coin-scene">
+    <div
+      class="coin-3d"
+      [class.flipping]="flipping()"
+      [class.flip-heads]="flipResult() === 'heads'"
+      [class.flip-tails]="flipResult() === 'tails'"
+      (click)="flip()"
+    >
+      <div class="face front">{{ frontText() }}</div>
+      <div class="face back">{{ backText() }}</div>
+    </div>
+  </div>
+  @if (showResult()) {
+    <div class="coin-result" [class.success]="resultClass() === 'success'" [class.fail]="resultClass() === 'fail'">{{ resultText() }}</div>
+  }
+</div>

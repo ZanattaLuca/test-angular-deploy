@@ -1,0 +1,73 @@
+<div class="encounter-module">
+  <div class="encounter-card" [class.has-mon]="!!pokemon()">
+    @if (loading()) {
+      <div class="encounter-placeholder">
+        <div class="encounter-icon">?</div>
+        <p class="encounter-hint">Caricamento Pokémon...</p>
+      </div>
+    } @else if (error() && !searching()) {
+      <div class="encounter-placeholder">
+        <div class="encounter-icon">⚠</div>
+        <p class="encounter-hint">{{ error() }}</p>
+      </div>
+    } @else if (searching() && !pokemon()) {
+      <div class="encounter-placeholder">
+        <div class="encounter-icon">🔍</div>
+        <p class="encounter-hint">In cerca nei dintorni...</p>
+      </div>
+    } @else if (pokemon(); as pkmn) {
+      <div class="encounter-content">
+        <img class="encounter-sprite" [src]="pkmn.sprites.other['official-artwork'].front_default || pkmn.sprites.front_default" [alt]="pkmn.name">
+        <div class="encounter-name">{{ pkmn.name }}</div>
+        <div class="encounter-id">#{{ pkmn.id.toString().padStart(4, '0') }}</div>
+        <div class="encounter-types">
+          @for (t of pkmn.types; track t.type.name) {
+            <span class="type-badge" [style.background]="getTypeColor(t.type.name)">{{ t.type.name }}</span>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="encounter-placeholder">
+        <div class="encounter-icon">?</div>
+        <p class="encounter-hint">{{ species().length }} Pokémon in questa zona!</p>
+      </div>
+    }
+  </div>
+
+  @if (phase() === 'encounter') {
+    <button class="btn btn-search" [disabled]="searching() || species().length === 0" (click)="search()">
+      🎲 Cerca Pokémon
+    </button>
+  }
+
+  @if (phase() === 'action') {
+    <div class="coin-row">
+      <app-coin
+        coinId="capture"
+        label="Cattura"
+        labelClass="label-capture"
+        frontText="Cattura"
+        backText="Fuggi"
+        resultSuccess="✅ Catturato!"
+        resultFail="❌ Fuggito via!"
+      />
+      <app-coin
+        coinId="flee"
+        label="Scappa"
+        labelClass="label-flee"
+        frontText="Scappa"
+        backText="Resta"
+        resultSuccess="✅ Scappato!"
+        resultFail="❌ Sei rimasto!"
+      />
+    </div>
+  }
+
+  @if (phase() === 'result') {
+    <button class="btn btn-continue" (click)="continueArea()">Continua ad esplorare</button>
+  }
+
+  @if (phase() !== 'result') {
+    <button class="btn btn-back" (click)="goBack()">← Torna indietro</button>
+  }
+</div>

@@ -1,0 +1,21 @@
+<div class="area-module">
+  <div class="area-status">
+    Stato Attuale: <span class="area-name">{{ area().title }}</span>
+  </div>
+  <p class="area-intro">{{ area().intro }}</p>
+
+  <div class="area-actions">
+    <button class="btn-search-area" (click)="onSearch()">🎲 Cerca Pokémon</button>
+  </div>
+
+  <hr class="area-divider">
+
+  <div class="area-choices-label">Oppure spostati in un&#39;altra zona:</div>
+  <div class="area-choices">
+    @for (choice of area().choices; track $index) {
+      <button class="btn-choice" (click)="onMove(choice)">
+        ➡ {{ choice.label }}
+      </button>
+    }
+  </div>
+</div>

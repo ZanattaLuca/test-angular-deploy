@@ -1,0 +1,19 @@
+<div class="battle">
+  @switch (phase()) {
+    @case ('intro') {
+      <app-intro />
+    }
+    @case ('area') {
+      <app-area />
+    }
+    @case ('encounter') {
+      <app-encounter />
+    }
+    @case ('action') {
+      <app-encounter />
+    }
+    @case ('result') {
+      <app-encounter />
+    }
+  }
+</div>

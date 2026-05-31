@@ -1,0 +1,10 @@
+<div class="wheel-module">
+  <div class="wheel-wrap">
+    <div class="wheel-pointer"></div>
+    <canvas #canvas [width]="size()" [height]="size()" [style.width.px]="size()" [style.height.px]="size()"></canvas>
+  </div>
+  <button class="btn-wheel" [disabled]="btnDisabled" (click)="spin()">Gira!</button>
+  @if (result) {
+    <div class="wheel-result"><span class="win">{{ result }}</span></div>
+  }
+</div>
