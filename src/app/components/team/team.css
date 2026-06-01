@@ -56,6 +56,17 @@
   color: #e0e0e0;
 }
 
+.team-level {
+  font-size: .75rem;
+  color: #3498db;
+  font-weight: bold;
+}
+
+.team-hp {
+  font-size: .7rem;
+  color: #888;
+}
+
 .team-id {
   font-size: .7rem;
   color: #666;

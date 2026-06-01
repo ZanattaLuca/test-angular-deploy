@@ -1,14 +1,14 @@
 <div class="wheel-module">
-  <canvas
-    #canvas
-    [width]="size()"
-    [height]="size()"
-    class="wheel-canvas"
-  ></canvas>
+  <div class="wheel-container">
+    <div class="wheel-pointer"></div>
+    <canvas
+      #canvas
+      [width]="size()"
+      [height]="size()"
+      class="wheel-canvas"
+    ></canvas>
+  </div>
   <button class="wheel-btn" (click)="spin()" [disabled]="btnDisabled">
-    Gira la ruota
+    Lancia la Poké Ball
   </button>
-  @if (result) {
-    <div class="wheel-result">{{ result }}</div>
-  }
 </div>

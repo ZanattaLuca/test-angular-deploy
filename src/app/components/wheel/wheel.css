@@ -5,9 +5,29 @@
   gap: 1rem;
 }
 
+.wheel-container {
+  position: relative;
+  display: inline-block;
+}
+
+.wheel-pointer {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 18px solid #ffd700;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.5));
+}
+
 .wheel-canvas {
   border-radius: 50%;
   box-shadow: 0 0 20px rgba(0,0,0,.4);
+  display: block;
 }
 
 .wheel-btn {
@@ -24,10 +44,3 @@
 
 .wheel-btn:hover:not(:disabled) { transform: scale(1.05); }
 .wheel-btn:disabled { opacity: .5; cursor: not-allowed; }
-
-.wheel-result {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #ffd700;
-  text-transform: uppercase;
-}

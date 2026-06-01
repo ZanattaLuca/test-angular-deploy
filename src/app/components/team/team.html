@@ -5,17 +5,19 @@
     <p class="team-empty">Nessun Pokémon catturato. Esplora le zone e cattura i Pokémon!</p>
   } @else {
     <div class="team-grid">
-      @for (pkmn of team(); track pkmn.id) {
+      @for (tp of team(); track tp.pokemon.id) {
         <div class="team-card">
           <img
             class="team-sprite"
-            [src]="pkmn.sprites.other['official-artwork'].front_default || pkmn.sprites.front_default"
-            [alt]="pkmn.name"
+            [src]="tp.pokemon.sprites.other['official-artwork'].front_default || tp.pokemon.sprites.front_default"
+            [alt]="tp.pokemon.name"
           />
-          <div class="team-name">{{ pkmn.name }}</div>
-          <div class="team-id">#{{ pkmn.id.toString().padStart(4, '0') }}</div>
+          <div class="team-name">{{ tp.pokemon.name }}</div>
+          <div class="team-level">Lv.{{ tp.level }}</div>
+          <div class="team-hp">HP: {{ tp.currentHp }}/{{ tp.maxHp }}</div>
+          <div class="team-id">#{{ tp.pokemon.id.toString().padStart(4, '0') }}</div>
           <div class="team-types">
-            @for (t of pkmn.types; track t.type.name) {
+            @for (t of tp.pokemon.types; track t.type.name) {
               <span class="type-badge" [style.background]="getTypeColor(t.type.name)">
                 {{ t.type.name }}
               </span>

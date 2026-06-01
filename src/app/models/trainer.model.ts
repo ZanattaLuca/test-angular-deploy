@@ -1,4 +1,4 @@
-import { Pokemon } from './pokemon.model';
+import { TeamPokemon } from './battle.model';
 
 export interface Item {
   id: string;
@@ -8,7 +8,7 @@ export interface Item {
 
 export interface Trainer {
   name: string;
-  pokemon: Pokemon[];
+  pokemon: TeamPokemon[];
   inventory: Item[];
 }
 
@@ -16,6 +16,8 @@ export function createDefaultTrainer(name: string = 'Trainer'): Trainer {
   return {
     name,
     pokemon: [],
-    inventory: [],
+    inventory: [
+      { id: 'poke-ball', name: 'Poké Ball', quantity: 10 },
+    ],
   };
 }

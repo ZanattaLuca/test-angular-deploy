@@ -1,0 +1,15 @@
+@if (quest(); as q) {
+  <div class="quest-bar" [class]="q.status">
+    <span class="quest-title">{{ q.title }}</span>
+    <div class="quest-progress-bar">
+      <div
+        class="quest-fill"
+        [style.width]="(q.progress / q.target) * 100 + '%'"
+      ></div>
+    </div>
+    <span class="quest-count">{{ q.progress }}/{{ q.target }}</span>
+    <span class="quest-status-label">
+      @if (q.status === 'completed') { ✓ } @else if (q.status === 'failed') { ✗ }
+    </span>
+  </div>
+}

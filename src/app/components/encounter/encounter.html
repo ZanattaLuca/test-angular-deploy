@@ -31,9 +31,6 @@
             </span>
           }
         </div>
-        @if (isAlreadyCaught()) {
-          <span class="captured-badge">Già catturato</span>
-        }
       </div>
     } @else {
       <div class="encounter-placeholder">
@@ -54,30 +51,36 @@
   }
 
   @if (phase() === 'action') {
-    <div class="coin-row">
-      <app-coin
-        coinId="capture"
-        label="Cattura"
-        labelClass="label-capture"
-        frontText="Cattura"
-        backText="Fuggi"
-        resultSuccess="Catturato!"
-        resultFail="Fuggito via!"
-        [disabled]="coinDisabled()"
-        (coinFlipped)="onCaptureResult($event)"
-      />
-      <app-coin
-        coinId="flee"
-        label="Scappa"
-        labelClass="label-flee"
-        frontText="Scappa"
-        backText="Resta"
-        resultSuccess="Scappato!"
-        resultFail="Sei rimasto!"
-        [disabled]="coinDisabled()"
-        (coinFlipped)="onFleeResult($event)"
-      />
-    </div>
+    @if (isFirstEncounter) {
+      <div class="coin-row">
+        <app-coin
+          coinId="capture"
+          [disabled]="coinDisabled()"
+          (coinFlipped)="onCaptureResult($event)"
+        />
+        <app-coin
+          coinId="flee-first"
+          [disabled]="coinDisabled()"
+          (coinFlipped)="onFirstFleeResult($event)"
+        />
+      </div>
+      <p class="first-hint">Lancia la moneta per catturare il tuo primo Pok&#233;mon!</p>
+      <div class="player-hp-bar">
+        <span class="player-hp-label">I tuoi HP:</span>
+        <div class="hp-bar-bg player-hp-bg">
+          <div
+            class="hp-bar-fill player-hp-fill"
+            [style.width.%]="(playerHp() / playerMaxHp()) * 100"
+          ></div>
+        </div>
+        <span class="player-hp-text">{{ playerHp() }}/{{ playerMaxHp() }}</span>
+      </div>
+    } @else {
+      <div class="encounter-choices">
+        <button class="btn btn-fight" (click)="goToBattle()">Combatti</button>
+        <button class="btn btn-flee-enc" (click)="onFleeResult(true)">Scappa</button>
+      </div>
+    }
   }
 
   @if (phase() === 'result') {
@@ -90,8 +93,8 @@
     <div class="team-info">
       Team: {{ team().length }} Pokémon
       <span class="team-names">
-        @for (p of team(); track p.id; let last = $last) {
-          {{ p.name }}{{ last ? '' : ', ' }}
+        @for (p of team(); track p.pokemon.id; let last = $last) {
+          {{ p.pokemon.name }} Lv.{{ p.level }}{{ last ? '' : ', ' }}
         }
       </span>
     </div>

@@ -1,0 +1,179 @@
+<div class="battle-module">
+  @if (enemyPkmn(); as enemy) {
+    <div class="battle-field">
+      <div class="enemy-area">
+        <div class="pokemon-display">
+          <img
+            class="battle-sprite enemy-sprite"
+            [src]="enemy.pokemon.sprites.front_default || enemy.pokemon.sprites.other['official-artwork'].front_default"
+            [alt]="enemy.pokemon.name"
+          />
+          <div class="pkmn-info">
+            <span class="pkmn-name">{{ enemy.pokemon.name }}</span>
+            <span class="pkmn-level">Lv.{{ enemy.level }}</span>
+            @if (enemy.status) {
+              <span class="status-badge">{{ StatusNames[enemy.status] || enemy.status }}</span>
+            }
+          </div>
+          <div class="hp-container">
+            <div class="hp-bar-bg">
+              <div
+                class="hp-bar-fill"
+                [style.width.%]="hpPercent(enemy.currentHp, enemy.maxHp)"
+                [style.background]="hpBarColor(hpPercent(enemy.currentHp, enemy.maxHp))"
+              ></div>
+            </div>
+            <span class="hp-text">{{ enemy.currentHp }}/{{ enemy.maxHp }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="battle-log-area">
+        @for (entry of log(); track $index) {
+          <p class="log-msg" [class.log-player]="entry.side === 'player'" [class.log-enemy]="entry.side === 'enemy'">{{ entry.text }}</p>
+        }
+      </div>
+
+      <div class="player-area">
+        <div class="pokemon-display">
+          <img
+            class="battle-sprite player-sprite"
+            [src]="activePkmn()?.pokemon?.sprites?.back_default || activePkmn()?.pokemon?.sprites?.front_default"
+            [alt]="activePkmn()?.pokemon?.name"
+          />
+          <div class="pkmn-info">
+            <span class="pkmn-name">{{ activePkmn()?.pokemon?.name }}</span>
+            <span class="pkmn-level">Lv.{{ activePkmn()?.level }}</span>
+            @if (activePkmn()?.status; as st) {
+              <span class="status-badge">{{ StatusNames[st] || st }}</span>
+            }
+          </div>
+          <div class="hp-container">
+            <div class="hp-bar-bg">
+              <div
+                class="hp-bar-fill"
+                [style.width.%]="hpPercent(activePkmn()?.currentHp ?? 0, activePkmn()?.maxHp ?? 1)"
+                [style.background]="hpBarColor(hpPercent(activePkmn()?.currentHp ?? 0, activePkmn()?.maxHp ?? 1))"
+              ></div>
+            </div>
+            <span class="hp-text">{{ activePkmn()?.currentHp ?? 0 }}/{{ activePkmn()?.maxHp ?? 0 }}</span>
+          </div>
+          <div class="xp-bar-bg">
+            <div class="xp-bar-fill" [style.width.%]="xpPercent()"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showCatchWheel()) {
+    <div class="catch-overlay">
+      @if (catching()) {
+        <app-wheel
+          [catchSegments]="catchSegments()"
+          (wheelResult)="onCatchResult($event)"
+        />
+        <button class="btn-back" (click)="onBack()">← Annulla</button>
+      } @else {
+        <div class="catch-result">
+          <p>{{ catchingResult() }}</p>
+          @if (catchingResult() === 'Catturato!') {
+            <img
+              class="catch-sprite"
+              [src]="enemyPkmn()?.pokemon?.sprites?.other?.['official-artwork']?.front_default || enemyPkmn()?.pokemon?.sprites?.front_default"
+              [alt]="enemyPkmn()?.pokemon?.name"
+            />
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="action-panel">
+      @if (subPhase() === 'idle') {
+        <div class="action-buttons">
+          <button class="btn-action" (click)="onFight()" [disabled]="busy()">Lotta</button>
+          <button
+            class="btn-action"
+            (click)="onItem()"
+            [disabled]="pokeballs() === 0 || busy()"
+          >
+            Strumenti
+          </button>
+          <button
+            class="btn-action"
+            (click)="onPokemon()"
+            [disabled]="team().length <= 1 || busy()"
+          >
+            Pokémon
+          </button>
+          <button class="btn-action btn-flee" (click)="onFlee()" [disabled]="busy()">Fuga</button>
+        </div>
+      }
+
+      @if (subPhase() === 'flee') {
+        <div class="sub-panel">
+          <app-coin
+            coinId="flee"
+            [disabled]="false"
+            (coinFlipped)="onFleeCoinResult($event)"
+          />
+          <button class="btn-back" (click)="onBack()">← Annulla</button>
+        </div>
+      }
+
+      @if (subPhase() === 'item') {
+        <div class="sub-panel">
+          @if (pokeballs() > 0) {
+            <button class="btn-item" (click)="openCatch()">
+              Poké Ball (x{{ pokeballs() }})
+            </button>
+          }
+          <button class="btn-back" (click)="onBack()">← Indietro</button>
+        </div>
+      }
+
+      @if (subPhase() === 'pokemon') {
+        <div class="sub-panel">
+          @for (p of team(); track p.pokemon.id; let i = $index) {
+            <button
+              class="btn-pkmn-switch"
+              [class.active]="i === activeIndex()"
+              [disabled]="p.currentHp <= 0 || i === activeIndex()"
+              (click)="switchTo(i)"
+            >
+              <span class="switch-name">{{ p.pokemon.name }}</span>
+              <span class="switch-level">Lv.{{ p.level }}</span>
+              <span class="switch-hp">{{ p.currentHp }}/{{ p.maxHp }}</span>
+            </button>
+          }
+          <button class="btn-back" (click)="onBack()">← Indietro</button>
+        </div>
+      }
+
+      @if (subPhase() === 'fight') {
+        <div class="sub-panel">
+          @for (move of activePkmn()?.moves; track move.name; let i = $index) {
+            <button
+              class="btn-move"
+              [disabled]="move.pp <= 0 || busy()"
+              (click)="useMove(i)"
+            >
+              <span class="move-name">{{ move.name }}</span>
+              <span class="move-info">
+                <span
+                  class="move-type"
+                  [style.background]="getTypeColor(move.type)"
+                >{{ move.type }}</span>
+                @if (move.damageClass !== 'status') {
+                  <span class="move-power">{{ move.power }}</span>
+                }
+                <span class="move-pp">{{ move.pp }}/{{ move.maxPp }}</span>
+              </span>
+            </button>
+          }
+          <button class="btn-back" (click)="onBack()">← Indietro</button>
+        </div>
+      }
+    </div>
+  }
+</div>

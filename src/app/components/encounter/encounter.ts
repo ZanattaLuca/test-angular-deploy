@@ -30,9 +30,12 @@ export class EncounterComponent implements OnDestroy {
   readonly phase = this.battle.phase;
   readonly pokemon = this.battle.currentPokemon;
   readonly team = this.battle.team;
+  readonly playerHp = this.battle.playerHp;
+  readonly playerMaxHp = this.battle.playerMaxHp;
 
   readonly popup = signal<PopupType | null>(null);
   readonly coinDisabled = signal(false);
+  readonly wildLevel = signal(5);
 
   constructor() {
     this.loadSpecies();
@@ -40,6 +43,10 @@ export class EncounterComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.abortController?.abort();
+  }
+
+  get isFirstEncounter(): boolean {
+    return this.battle.isFirst;
   }
 
   private async loadSpecies(): Promise<void> {
@@ -94,11 +101,11 @@ export class EncounterComponent implements OnDestroy {
     }
   }
 
-  onCaptureResult(success: boolean): void {
+  async onCaptureResult(success: boolean): Promise<void> {
     this.coinDisabled.set(true);
     if (success) {
       const pkmn = this.pokemon()!;
-      this.battle.capturePokemon(pkmn);
+      await this.battle.capturePokemonAsTeam(pkmn, this.wildLevel());
       this.popup.set('capture_success');
     } else {
       this.popup.set('capture_fail');
@@ -108,6 +115,25 @@ export class EncounterComponent implements OnDestroy {
   onFleeResult(success: boolean): void {
     this.coinDisabled.set(true);
     this.popup.set(success ? 'flee_success' : 'flee_fail');
+  }
+
+  onFirstFleeResult(success: boolean): void {
+    this.coinDisabled.set(true);
+    if (success) {
+      this.popup.set('flee_success');
+    } else {
+      const dmg = 4 + Math.floor(Math.random() * 5);
+      this.battle.playerHp.update((h) => Math.max(0, h - dmg));
+      if (this.battle.playerHp() <= 0) {
+        this.battle.gameOver.set(true);
+        this.battle.gameOverMessage.set(
+          'Hai preso una bella botta e decidi che fare l\'allenatore non fa per te. Meglio fare il falegname.',
+        );
+        this.battle.phase.set('gameover');
+      } else {
+        this.popup.set('flee_fail');
+      }
+    }
   }
 
   dismissPopup(): void {
@@ -124,6 +150,14 @@ export class EncounterComponent implements OnDestroy {
     }
   }
 
+  async goToBattle(): Promise<void> {
+    const pkmn = this.pokemon();
+    if (!pkmn) return;
+    const aliveCount = this.team().filter((p) => p.currentHp > 0).length;
+    if (aliveCount === 0) return;
+    await this.battle.startBattle(pkmn, this.wildLevel());
+  }
+
   goBack(): void {
     this.battle.goToArea(this.battle.currentArea().id);
   }
@@ -133,8 +167,7 @@ export class EncounterComponent implements OnDestroy {
   }
 
   isAlreadyCaught(): boolean {
-    const pkmn = this.pokemon();
-    return pkmn ? this.battle.hasPokemon(pkmn.id) : false;
+    return false;
   }
 
   getTypeColor(type: string): string {

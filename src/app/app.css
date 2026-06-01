@@ -6,3 +6,37 @@
   width: 100%;
   max-width: 600px;
 }
+
+.gameover-screen {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
+}
+
+.gameover-screen h2 {
+  font-size: 2rem;
+  color: #e74c3c;
+}
+
+.gameover-screen p {
+  color: #ccc;
+  font-size: 1rem;
+}
+
+.btn-restart {
+  margin-top: 1rem;
+  padding: .8rem 2.5rem;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-restart:hover { transform: scale(1.05); }

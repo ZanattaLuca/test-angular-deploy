@@ -1,0 +1,54 @@
+.quest-bar {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .5rem 1rem;
+  background: rgba(22, 33, 62, .8);
+  border: 1px solid #2a2a5e;
+  border-radius: 10px;
+  font-size: .85rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.quest-bar.doing { border-color: #3498db; }
+.quest-bar.completed { border-color: #2ecc71; }
+.quest-bar.failed { border-color: #e74c3c; }
+
+.quest-title {
+  color: #ccc;
+  white-space: nowrap;
+}
+
+.quest-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #1a1a3e;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.quest-fill {
+  height: 100%;
+  background: #3498db;
+  border-radius: 4px;
+  transition: width .3s;
+}
+
+.quest-bar.completed .quest-fill { background: #2ecc71; }
+.quest-bar.failed .quest-fill { background: #e74c3c; }
+
+.quest-count {
+  color: #888;
+  min-width: 2.2rem;
+  text-align: right;
+}
+
+.quest-status-label {
+  font-size: 1.1rem;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.quest-bar.completed .quest-status-label { color: #2ecc71; }
+.quest-bar.failed .quest-status-label { color: #e74c3c; }

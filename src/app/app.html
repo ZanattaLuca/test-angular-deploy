@@ -1,4 +1,8 @@
 <div class="battle">
+  @if (phase() !== 'intro' && phase() !== 'gameover') {
+    <app-quest-bar />
+  }
+
   @switch (phase()) {
     @case ('intro') {
       <app-intro />
@@ -14,6 +18,18 @@
     }
     @case ('result') {
       <app-encounter />
+    }
+    @case ('battle') {
+      <app-battle />
+    }
+    @case ('gameover') {
+      <div class="gameover-screen">
+        <h2>Game Over</h2>
+        <p>{{ battle.gameOverMessage() }}</p>
+        <button class="btn btn-restart" (click)="battle.resetGame()">
+          Ricomincia
+        </button>
+      </div>
     }
   }
 </div>
