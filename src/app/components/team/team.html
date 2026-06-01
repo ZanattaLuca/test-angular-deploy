@@ -1,0 +1,28 @@
+<div class="team-module">
+  <h3 class="team-title">Squadra di {{ trainer().name }}</h3>
+
+  @if (team().length === 0) {
+    <p class="team-empty">Nessun Pokémon catturato. Esplora le zone e cattura i Pokémon!</p>
+  } @else {
+    <div class="team-grid">
+      @for (pkmn of team(); track pkmn.id) {
+        <div class="team-card">
+          <img
+            class="team-sprite"
+            [src]="pkmn.sprites.other['official-artwork'].front_default || pkmn.sprites.front_default"
+            [alt]="pkmn.name"
+          />
+          <div class="team-name">{{ pkmn.name }}</div>
+          <div class="team-id">#{{ pkmn.id.toString().padStart(4, '0') }}</div>
+          <div class="team-types">
+            @for (t of pkmn.types; track t.type.name) {
+              <span class="type-badge" [style.background]="getTypeColor(t.type.name)">
+                {{ t.type.name }}
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

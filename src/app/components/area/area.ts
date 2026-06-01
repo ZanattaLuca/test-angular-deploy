@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { BattleService } from '../../services/battle.service';
 import { Choice } from '../../models/area.model';
+import { TeamComponent } from '../team/team';
 
 @Component({
   selector: 'app-area',
   standalone: true,
-  imports: [],
+  imports: [TeamComponent],
   templateUrl: './area.html',
   styleUrl: './area.css',
 })

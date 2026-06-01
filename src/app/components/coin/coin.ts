@@ -1,5 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
-import { BattleService } from '../../services/battle.service';
+import { Component, input, output, signal } from '@angular/core';
 
 @Component({
   selector: 'app-coin',
@@ -9,8 +8,6 @@ import { BattleService } from '../../services/battle.service';
   styleUrl: './coin.css',
 })
 export class CoinComponent {
-  private battle = inject(BattleService);
-
   readonly coinId = input.required<string>();
   readonly label = input.required<string>();
   readonly labelClass = input<string>('');
@@ -18,6 +15,9 @@ export class CoinComponent {
   readonly backText = input.required<string>();
   readonly resultSuccess = input.required<string>();
   readonly resultFail = input.required<string>();
+  readonly disabled = input(false);
+
+  readonly coinFlipped = output<boolean>();
 
   readonly flipping = signal(false);
   readonly flipResult = signal<'heads' | 'tails' | null>(null);
@@ -26,8 +26,7 @@ export class CoinComponent {
   readonly resultClass = signal('');
 
   flip(): void {
-    if (this.flipping()) return;
-    if (this.battle.phase() !== 'action') return;
+    if (this.flipping() || this.disabled()) return;
 
     this.flipping.set(true);
     this.showResult.set(false);
@@ -40,10 +39,15 @@ export class CoinComponent {
 
       setTimeout(() => {
         this.flipping.set(false);
-        this.showResult.set(true);
-        this.resultText.set(heads ? this.resultSuccess() : this.resultFail());
-        this.resultClass.set(heads ? 'success' : 'fail');
-        this.battle.setPhase('result');
+
+        setTimeout(() => {
+          this.showResult.set(true);
+          this.resultText.set(
+            heads ? this.resultSuccess() : this.resultFail(),
+          );
+          this.resultClass.set(heads ? 'success' : 'fail');
+          this.coinFlipped.emit(heads);
+        }, 600);
       }, 800);
     }, 20);
   }

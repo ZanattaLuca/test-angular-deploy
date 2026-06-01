@@ -103,3 +103,102 @@
   border-radius: 8px;
 }
 .btn-back:hover { color: #daa520; border-color: #daa520; }
+
+.captured-badge {
+  display: inline-block;
+  margin-top: 0.3rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  background: rgba(218, 165, 32, 0.2);
+  color: #daa520;
+  border: 1px solid #daa520;
+}
+
+.team-info {
+  font-size: 0.9rem;
+  color: #888;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.team-names {
+  text-transform: capitalize;
+  color: #daa520;
+  font-weight: bold;
+}
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn .2s ease;
+}
+
+.popup-card {
+  background: linear-gradient(145deg, #16213e, #0f3460);
+  border: 2px solid #daa520;
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  max-width: 340px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+.popup-icon {
+  font-size: 3rem;
+}
+
+.popup-title {
+  font-size: 1.3rem;
+  color: #ffd700;
+  text-transform: capitalize;
+  line-height: 1.4;
+}
+
+.popup-hint {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.popup-sprite {
+  width: 100px;
+  height: 100px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 12px rgba(218, 165, 32, 0.3));
+}
+
+.btn-popup {
+  margin-top: 0.5rem;
+  padding: 0.7rem 2.5rem;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 4px 16px rgba(231, 76, 60, 0.3);
+}
+
+.btn-popup:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

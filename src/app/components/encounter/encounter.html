@@ -17,14 +17,23 @@
       </div>
     } @else if (pokemon(); as pkmn) {
       <div class="encounter-content">
-        <img class="encounter-sprite" [src]="pkmn.sprites.other['official-artwork'].front_default || pkmn.sprites.front_default" [alt]="pkmn.name">
+        <img
+          class="encounter-sprite"
+          [src]="pkmn.sprites.other['official-artwork'].front_default || pkmn.sprites.front_default"
+          [alt]="pkmn.name"
+        />
         <div class="encounter-name">{{ pkmn.name }}</div>
         <div class="encounter-id">#{{ pkmn.id.toString().padStart(4, '0') }}</div>
         <div class="encounter-types">
           @for (t of pkmn.types; track t.type.name) {
-            <span class="type-badge" [style.background]="getTypeColor(t.type.name)">{{ t.type.name }}</span>
+            <span class="type-badge" [style.background]="getTypeColor(t.type.name)">
+              {{ t.type.name }}
+            </span>
           }
         </div>
+        @if (isAlreadyCaught()) {
+          <span class="captured-badge">Già catturato</span>
+        }
       </div>
     } @else {
       <div class="encounter-placeholder">
@@ -35,8 +44,12 @@
   </div>
 
   @if (phase() === 'encounter') {
-    <button class="btn btn-search" [disabled]="searching() || species().length === 0" (click)="search()">
-      🎲 Cerca Pokémon
+    <button
+      class="btn btn-search"
+      [disabled]="searching() || species().length === 0"
+      (click)="search()"
+    >
+      Cerca Pokémon
     </button>
   }
 
@@ -48,8 +61,10 @@
         labelClass="label-capture"
         frontText="Cattura"
         backText="Fuggi"
-        resultSuccess="✅ Catturato!"
-        resultFail="❌ Fuggito via!"
+        resultSuccess="Catturato!"
+        resultFail="Fuggito via!"
+        [disabled]="coinDisabled()"
+        (coinFlipped)="onCaptureResult($event)"
       />
       <app-coin
         coinId="flee"
@@ -57,17 +72,65 @@
         labelClass="label-flee"
         frontText="Scappa"
         backText="Resta"
-        resultSuccess="✅ Scappato!"
-        resultFail="❌ Sei rimasto!"
+        resultSuccess="Scappato!"
+        resultFail="Sei rimasto!"
+        [disabled]="coinDisabled()"
+        (coinFlipped)="onFleeResult($event)"
       />
     </div>
   }
 
   @if (phase() === 'result') {
-    <button class="btn btn-continue" (click)="continueArea()">Continua ad esplorare</button>
+    <button class="btn btn-continue" (click)="continueArea()">
+      Continua ad esplorare
+    </button>
+  }
+
+  @if (team().length > 0) {
+    <div class="team-info">
+      Team: {{ team().length }} Pokémon
+      <span class="team-names">
+        @for (p of team(); track p.id; let last = $last) {
+          {{ p.name }}{{ last ? '' : ', ' }}
+        }
+      </span>
+    </div>
   }
 
   @if (phase() !== 'result') {
-    <button class="btn btn-back" (click)="goBack()">← Torna indietro</button>
+    <button class="btn btn-back" (click)="goBack()">Torna indietro</button>
   }
 </div>
+
+@if (popup(); as p) {
+  <div class="popup-overlay">
+    <div class="popup-card">
+      @if (p === 'capture_success') {
+        <div class="popup-icon">✅</div>
+        <h3 class="popup-title">Hai catturato<br/>{{ pokemon()?.name }}!</h3>
+        @if (pokemon(); as pkmn) {
+          <img
+            class="popup-sprite"
+            [src]="pkmn.sprites.other['official-artwork'].front_default || pkmn.sprites.front_default"
+            [alt]="pkmn.name"
+          />
+        }
+      }
+      @if (p === 'capture_fail') {
+        <div class="popup-icon">💨</div>
+        <h3 class="popup-title">{{ pokemon()?.name }}<br/>è fuggito via!</h3>
+        <p class="popup-hint">Puoi cercare altri Pokémon</p>
+      }
+      @if (p === 'flee_success') {
+        <div class="popup-icon">🏃</div>
+        <h3 class="popup-title">Sei scappato!</h3>
+      }
+      @if (p === 'flee_fail') {
+        <div class="popup-icon">😰</div>
+        <h3 class="popup-title">Non riesci a scappare!</h3>
+        <p class="popup-hint">Sei rimasto bloccato</p>
+      }
+      <button class="btn btn-popup" (click)="dismissPopup()">OK</button>
+    </div>
+  </div>
+}

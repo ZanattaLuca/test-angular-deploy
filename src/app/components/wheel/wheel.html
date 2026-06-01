@@ -1,10 +1,14 @@
 <div class="wheel-module">
-  <div class="wheel-wrap">
-    <div class="wheel-pointer"></div>
-    <canvas #canvas [width]="size()" [height]="size()" [style.width.px]="size()" [style.height.px]="size()"></canvas>
-  </div>
-  <button class="btn-wheel" [disabled]="btnDisabled" (click)="spin()">Gira!</button>
+  <canvas
+    #canvas
+    [width]="size()"
+    [height]="size()"
+    class="wheel-canvas"
+  ></canvas>
+  <button class="wheel-btn" (click)="spin()" [disabled]="btnDisabled">
+    Gira la ruota
+  </button>
   @if (result) {
-    <div class="wheel-result"><span class="win">{{ result }}</span></div>
+    <div class="wheel-result">{{ result }}</div>
   }
 </div>

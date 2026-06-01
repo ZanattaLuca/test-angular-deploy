@@ -1,16 +1,14 @@
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { BattleService } from '../../services/battle.service';
-import { Pokemon } from '../../models/pokemon.model';
+import { PokemonService } from '../../services/pokemon.service';
+import { Pokemon, TYPE_COLORS } from '../../models/pokemon.model';
 import { CoinComponent } from '../coin/coin';
 
-const TYPE_COLORS: Record<string, string> = {
-  normal:'#A8A77A',fire:'#EE8130',water:'#6390F0',
-  electric:'#F7D02C',grass:'#7AC74C',ice:'#96D9D6',
-  fighting:'#C22E28',poison:'#A33EA1',ground:'#E2BF65',
-  flying:'#A98FF3',psychic:'#F95587',bug:'#A6B91A',
-  rock:'#B6A136',ghost:'#735797',dragon:'#6F35FC',
-  dark:'#705746',steel:'#B7B7CE',fairy:'#D685AD',
-};
+type PopupType =
+  | 'capture_success'
+  | 'capture_fail'
+  | 'flee_success'
+  | 'flee_fail';
 
 @Component({
   selector: 'app-encounter',
@@ -21,6 +19,7 @@ const TYPE_COLORS: Record<string, string> = {
 })
 export class EncounterComponent implements OnDestroy {
   private battle = inject(BattleService);
+  private pokemonService = inject(PokemonService);
 
   readonly species = signal<number[]>([]);
   readonly loading = signal(false);
@@ -30,6 +29,10 @@ export class EncounterComponent implements OnDestroy {
 
   readonly phase = this.battle.phase;
   readonly pokemon = this.battle.currentPokemon;
+  readonly team = this.battle.team;
+
+  readonly popup = signal<PopupType | null>(null);
+  readonly coinDisabled = signal(false);
 
   constructor() {
     this.loadSpecies();
@@ -47,19 +50,10 @@ export class EncounterComponent implements OnDestroy {
     this.error.set('');
 
     try {
-      const res = await fetch(`https://pokeapi.co/api/v2/pokemon-habitat/${area.habitat}/`);
-      const data = await res.json();
+      const ids = await this.pokemonService.getSpeciesByHabitat(area.habitat);
+      this.species.set(ids);
 
-      this.species.set(
-        data.pokemon_species
-          .map((s: { url: string }) => {
-            const match = s.url.match(/\/pokemon-species\/(\d+)\//);
-            return match ? +match[1] : null;
-          })
-          .filter((id: number | null) => id !== null && id <= 151)
-      );
-
-      if (this.species().length === 0) {
+      if (ids.length === 0) {
         this.error.set('Nessun Pokémon trovato in questa zona.');
       }
     } catch {
@@ -71,20 +65,23 @@ export class EncounterComponent implements OnDestroy {
 
   async search(): Promise<void> {
     if (this.searching() || this.species().length === 0) return;
-    if (this.battle.phase() === 'action' || this.battle.phase() === 'result') return;
+    if (
+      this.battle.phase() === 'action' ||
+      this.battle.phase() === 'result'
+    )
+      return;
 
     this.searching.set(true);
     this.battle.setPokemon(null);
 
-    const id = this.species()[Math.floor(Math.random() * this.species().length)];
+    const id =
+      this.species()[Math.floor(Math.random() * this.species().length)];
     this.abortController = new AbortController();
 
     try {
       const [data] = await Promise.all([
-        fetch(`https://pokeapi.co/api/v2/pokemon/${id}`, {
-          signal: this.abortController.signal,
-        }).then(r => r.json() as Promise<Pokemon>),
-        new Promise<void>(r => setTimeout(r, 2000)),
+        this.pokemonService.getPokemonById(id, this.abortController.signal),
+        new Promise<void>((r) => setTimeout(r, 2000)),
       ]);
 
       this.battle.setPokemon(data);
@@ -97,12 +94,47 @@ export class EncounterComponent implements OnDestroy {
     }
   }
 
+  onCaptureResult(success: boolean): void {
+    this.coinDisabled.set(true);
+    if (success) {
+      const pkmn = this.pokemon()!;
+      this.battle.capturePokemon(pkmn);
+      this.popup.set('capture_success');
+    } else {
+      this.popup.set('capture_fail');
+    }
+  }
+
+  onFleeResult(success: boolean): void {
+    this.coinDisabled.set(true);
+    this.popup.set(success ? 'flee_success' : 'flee_fail');
+  }
+
+  dismissPopup(): void {
+    const p = this.popup();
+    this.popup.set(null);
+    this.coinDisabled.set(false);
+
+    if (p === 'capture_success') {
+      this.battle.setPhase('result');
+    } else if (p === 'capture_fail') {
+      this.battle.dismissPokemon();
+    } else {
+      this.battle.setPhase('result');
+    }
+  }
+
   goBack(): void {
     this.battle.goToArea(this.battle.currentArea().id);
   }
 
   continueArea(): void {
     this.battle.goToArea(this.battle.currentArea().id);
+  }
+
+  isAlreadyCaught(): boolean {
+    const pkmn = this.pokemon();
+    return pkmn ? this.battle.hasPokemon(pkmn.id) : false;
   }
 
   getTypeColor(type: string): string {
