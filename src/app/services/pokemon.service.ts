@@ -214,4 +214,13 @@ export class PokemonService {
   isSuperEffective(attackingType: string, defenderTypes: string[]): boolean {
     return this.getTypeEffectiveness(attackingType, defenderTypes) >= 2;
   }
+
+  isNotVeryEffective(attackingType: string, defenderTypes: string[]): boolean {
+    const eff = this.getTypeEffectiveness(attackingType, defenderTypes);
+    return eff > 0 && eff < 1;
+  }
+
+  isImmune(attackingType: string, defenderTypes: string[]): boolean {
+    return this.getTypeEffectiveness(attackingType, defenderTypes) === 0;
+  }
 }

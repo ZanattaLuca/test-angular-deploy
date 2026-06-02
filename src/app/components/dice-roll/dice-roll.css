@@ -13,8 +13,9 @@
 
 .dice-container {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .dice-box {
@@ -28,12 +29,7 @@
   align-items: center;
   justify-content: center;
   gap: .4rem;
-  transition: border-color .3s, box-shadow .3s;
-}
-
-.dice-advantage {
-  border-color: #ffd700 !important;
-  box-shadow: 0 0 20px rgba(255, 215, 0, .4);
+  transition: border-color .3s, box-shadow .3s, opacity .3s, filter .3s;
 }
 
 .dice-shaking {
@@ -53,9 +49,10 @@
   position: relative;
 }
 
-.dice-group-advantage {
+.dice-group-advantage,
+.dice-group-disadvantage {
   flex-direction: row;
-  gap: .6rem;
+  gap: .4rem;
 }
 
 .dice-kept {
@@ -63,9 +60,14 @@
   box-shadow: 0 0 20px rgba(255, 215, 0, .5);
 }
 
+.dice-kept-dis {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 18px rgba(231, 76, 60, .5);
+}
+
 .dice-discarded {
   opacity: .3;
-  filter: grayscale(.6);
+  filter: grayscale(.7);
 }
 
 .dice-type {
@@ -91,10 +93,6 @@
   transition: color .3s;
 }
 
-.dice-value-dim {
-  color: #555;
-}
-
 .dice-revealed {
   color: #ffd700;
   text-shadow: 0 0 12px rgba(255, 215, 0, .5);
@@ -110,7 +108,27 @@
   border: 1px solid #ffd700;
 }
 
-.dice-group-advantage .dice-vantaggio {
+.dice-group-advantage > .dice-vantaggio,
+.dice-group-disadvantage > .dice-vantaggio {
+  position: absolute;
+  top: -1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.dice-svantaggio {
+  padding: .15rem .5rem;
+  border-radius: 8px;
+  font-size: .6rem;
+  font-weight: bold;
+  color: #e74c3c;
+  background: rgba(231, 76, 60, .15);
+  border: 1px solid #e74c3c;
+}
+
+.dice-group-advantage > .dice-svantaggio,
+.dice-group-disadvantage > .dice-svantaggio {
   position: absolute;
   top: -1.2rem;
   left: 50%;

@@ -1,35 +1,62 @@
 <div class="dice-overlay">
   <div class="dice-container">
     @for (die of getDisplayDice(); track $index; let i = $index) {
-      @if (!rolling && die.advantage && die.rollB !== null) {
+      @if (rolling) {
+        <div class="dice-box dice-shaking" [style.border-color]="getTypeColor(die.type)">
+          <div class="dice-type" [style.background]="getTypeColor(die.type)">{{ die.type }}</div>
+          <div class="dice-size">{{ die.diceSize.toUpperCase() }}</div>
+          <div class="dice-value">{{ displayValues()[i] || '?' }}</div>
+          @if (die.advantage) {
+            <div class="dice-vantaggio">VANTAGGIO</div>
+          } @else if (die.disadvantage) {
+            <div class="dice-svantaggio">SVANTAGGIO</div>
+          }
+        </div>
+      } @else if (die.advantage && die.rollB !== null) {
         <div class="dice-group dice-group-advantage">
-          <div class="dice-box dice-discarded" [style.border-color]="getTypeColor(die.type)">
+          <div class="dice-box"
+            [class.dice-kept]="die.result === die.rollA"
+            [class.dice-discarded]="die.result !== die.rollA"
+            [style.border-color]="getTypeColor(die.type)">
             <div class="dice-type" [style.background]="getTypeColor(die.type)">{{ die.type }}</div>
             <div class="dice-size">{{ die.diceSize.toUpperCase() }}</div>
-            <div class="dice-value dice-value-dim">{{ die.rollA }}</div>
+            <div class="dice-value" [class.dice-revealed]="die.result === die.rollA">{{ die.rollA }}</div>
           </div>
-          <div class="dice-box dice-kept" [style.border-color]="getTypeColor(die.type)">
+          <div class="dice-box"
+            [class.dice-kept]="die.result === die.rollB"
+            [class.dice-discarded]="die.result !== die.rollB"
+            [style.border-color]="getTypeColor(die.type)">
             <div class="dice-type" [style.background]="getTypeColor(die.type)">{{ die.type }}</div>
             <div class="dice-size">{{ die.diceSize.toUpperCase() }}</div>
-            <div class="dice-value dice-revealed">{{ die.result }}</div>
+            <div class="dice-value" [class.dice-revealed]="die.result === die.rollB">{{ die.rollB }}</div>
           </div>
           <div class="dice-vantaggio">VANTAGGIO</div>
         </div>
+      } @else if (die.disadvantage && die.rollB !== null) {
+        <div class="dice-group dice-group-disadvantage">
+          <div class="dice-box"
+            [class.dice-kept-dis]="die.result === die.rollA"
+            [class.dice-discarded]="die.result !== die.rollA"
+            [style.border-color]="getTypeColor(die.type)">
+            <div class="dice-type" [style.background]="getTypeColor(die.type)">{{ die.type }}</div>
+            <div class="dice-size">{{ die.diceSize.toUpperCase() }}</div>
+            <div class="dice-value" [class.dice-revealed]="die.result === die.rollA">{{ die.rollA }}</div>
+          </div>
+          <div class="dice-box"
+            [class.dice-kept-dis]="die.result === die.rollB"
+            [class.dice-discarded]="die.result !== die.rollB"
+            [style.border-color]="getTypeColor(die.type)">
+            <div class="dice-type" [style.background]="getTypeColor(die.type)">{{ die.type }}</div>
+            <div class="dice-size">{{ die.diceSize.toUpperCase() }}</div>
+            <div class="dice-value" [class.dice-revealed]="die.result === die.rollB">{{ die.rollB }}</div>
+          </div>
+          <div class="dice-svantaggio">SVANTAGGIO</div>
+        </div>
       } @else {
-        <div
-          class="dice-box"
-          [class.dice-advantage]="die.advantage && !rolling"
-          [class.dice-shaking]="rolling"
-          [style.border-color]="getTypeColor(die.type)"
-        >
+        <div class="dice-box" [style.border-color]="getTypeColor(die.type)">
           <div class="dice-type" [style.background]="getTypeColor(die.type)">{{ die.type }}</div>
           <div class="dice-size">{{ die.diceSize.toUpperCase() }}</div>
-          <div class="dice-value" [class.dice-revealed]="!rolling">
-            {{ rolling ? displayValues()[i] || '?' : die.result }}
-          </div>
-          @if (die.advantage && !rolling) {
-            <div class="dice-vantaggio">VANTAGGIO</div>
-          }
+          <div class="dice-value dice-revealed">{{ die.result }}</div>
         </div>
       }
     }

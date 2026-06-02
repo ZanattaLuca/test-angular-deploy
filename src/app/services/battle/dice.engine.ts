@@ -7,6 +7,7 @@ export interface TypeDiceRoll {
   type: string;
   diceSize: DiceSize;
   advantage: boolean;
+  disadvantage: boolean;
   result: number;
   rollA: number;
   rollB: number | null;
@@ -33,23 +34,15 @@ function rollDie(diceSize: DiceSize): number {
 export function rollTypeDice(
   diceSize: DiceSize,
   advantage: boolean,
+  disadvantage: boolean,
 ): { result: number; rollA: number; rollB: number | null } {
   const first = rollDie(diceSize);
-  if (!advantage) return { result: first, rollA: first, rollB: null };
+  if (!advantage && !disadvantage) return { result: first, rollA: first, rollB: null };
   const second = rollDie(diceSize);
-  return {
-    result: Math.max(first, second),
-    rollA: first,
-    rollB: second,
-  };
-}
-
-function hasAdvantage(
-  attackingType: string,
-  defenderTypes: string[],
-  pokemonService: PokemonService,
-): boolean {
-  return pokemonService.isSuperEffective(attackingType, defenderTypes);
+  if (advantage) {
+    return { result: Math.max(first, second), rollA: first, rollB: second };
+  }
+  return { result: Math.min(first, second), rollA: first, rollB: second };
 }
 
 const STATUS_DICE_TYPES: Record<string, StatusEffect> = {
@@ -81,14 +74,32 @@ export function performAttack(
   let total = 0;
 
   for (const dtype of typeDice) {
-    const advantage = hasAdvantage(dtype, defenderTypes, pokemonService);
-    const { result, rollA, rollB } = rollTypeDice(diceSize, advantage);
+    const immune = pokemonService.isImmune(dtype, defenderTypes);
+
+    if (immune) {
+      rolls.push({
+        type: dtype,
+        diceSize,
+        advantage: false,
+        disadvantage: false,
+        result: 0,
+        rollA: 0,
+        rollB: null,
+        statusInflicted: null,
+      });
+      continue;
+    }
+
+    const advantage = pokemonService.isSuperEffective(dtype, defenderTypes);
+    const disadvantage = pokemonService.isNotVeryEffective(dtype, defenderTypes);
+    const { result, rollA, rollB } = rollTypeDice(diceSize, advantage, disadvantage);
     const statusInflicted = checkStatusEffect(dtype, diceSize, result);
 
     rolls.push({
       type: dtype,
       diceSize,
       advantage,
+      disadvantage,
       result,
       rollA,
       rollB,

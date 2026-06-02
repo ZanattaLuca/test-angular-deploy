@@ -82,6 +82,8 @@
       [rolling]="dicePhase() === 'rolling'"
       [diceTypes]="getCurrentDiceTypes()"
       [diceSize]="getCurrentDiceSize()"
+      [advantageFlags]="advantageFlags()"
+      [disadvantageFlags]="disadvantageFlags()"
       (click)="dismissDice()"
     />
   }

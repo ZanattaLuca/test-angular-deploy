@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { BattleService, TypeDiceRoll } from '../../services/battle';
+import { PokemonService } from '../../services/pokemon.service';
 import { TYPE_COLORS } from '../../models/pokemon.model';
 import { STATUS_NAMES } from '../../models/battle.model';
 import { DiceSize } from '../../models/evolution-data';
@@ -16,6 +17,7 @@ import { DiceRollComponent } from '../dice-roll/dice-roll';
 })
 export class BattleComponent {
   private battle = inject(BattleService);
+  private pokemonService = inject(PokemonService);
 
   readonly StatusNames = STATUS_NAMES;
 
@@ -37,6 +39,8 @@ export class BattleComponent {
   readonly dicePhase = signal<'hidden' | 'rolling' | 'revealed'>('hidden');
   readonly diceRolls = signal<TypeDiceRoll[] | null>(null);
   readonly diceOwner = signal<'none' | 'player' | 'enemy'>('none');
+  readonly advantageFlags = signal<boolean[]>([]);
+  readonly disadvantageFlags = signal<boolean[]>([]);
 
   getTypeColor(type: string): string {
     return TYPE_COLORS[type] || '#999';
@@ -68,10 +72,27 @@ export class BattleComponent {
     return size.toUpperCase();
   }
 
+  private computeFlags(atkTypes: string[], defTypes: string[]): void {
+    this.advantageFlags.set(atkTypes.map((t) => this.pokemonService.isSuperEffective(t, defTypes)));
+    this.disadvantageFlags.set(atkTypes.map((t) => this.pokemonService.isNotVeryEffective(t, defTypes)));
+  }
+
+  private getDefenderTypes(): string[] {
+    if (this.diceOwner() === 'player') {
+      const e = this.enemyPkmn();
+      return e ? e.pokemon.types.map((t) => t.type.name) : [];
+    }
+    const p = this.activePkmn();
+    return p ? p.pokemon.types.map((t) => t.type.name) : [];
+  }
+
   async onAttack(): Promise<void> {
     if (this.busy()) return;
 
     this.diceOwner.set('player');
+    const atkTypes = this.getCurrentDiceTypes();
+    const defTypes = this.getDefenderTypes();
+    this.computeFlags(atkTypes, defTypes);
     this.dicePhase.set('rolling');
     this.diceRolls.set(null);
 
@@ -108,6 +129,9 @@ export class BattleComponent {
 
   private async runEnemyAttack(): Promise<void> {
     this.diceOwner.set('enemy');
+    const atkTypes = this.getCurrentDiceTypes();
+    const defTypes = this.getDefenderTypes();
+    this.computeFlags(atkTypes, defTypes);
     this.dicePhase.set('rolling');
     this.diceRolls.set(null);
 

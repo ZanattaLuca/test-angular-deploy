@@ -6,6 +6,7 @@ export interface DiceDisplayRoll {
   type: string;
   diceSize: DiceSize;
   advantage: boolean;
+  disadvantage: boolean;
   result: number;
   rollA: number;
   rollB: number | null;
@@ -23,6 +24,8 @@ export class DiceRollComponent implements OnChanges {
   @Input() rolling = false;
   @Input() diceTypes: string[] = [];
   @Input() diceSize: DiceSize = 'd6';
+  @Input() advantageFlags: boolean[] = [];
+  @Input() disadvantageFlags: boolean[] = [];
 
   displayValues = signal<number[]>([]);
   private interval: ReturnType<typeof setInterval> | null = null;
@@ -35,16 +38,13 @@ export class DiceRollComponent implements OnChanges {
         this.startRolling();
       } else {
         this.stopRolling();
-        if (this.rolls) {
-          this.displayValues.set(this.rolls.map((r) => r.result));
-        }
       }
     }
   }
 
   private startRolling(): void {
     this.stopRolling();
-    const count = this.diceTypes.length || 2;
+    const count = this.getDisplayDice().length;
     this.displayValues.set(new Array(count).fill(0));
     this.interval = setInterval(() => {
       this.displayValues.update((vals) =>
@@ -67,14 +67,19 @@ export class DiceRollComponent implements OnChanges {
   getDisplayDice(): DiceDisplayRoll[] {
     if (this.rolls) return this.rolls;
     if (this.rolling) {
-      return this.diceTypes.map((type) => ({
-        type,
-        diceSize: this.diceSize,
-        advantage: false,
-        result: 0,
-        rollA: 0,
-        rollB: null,
-      }));
+      const result: DiceDisplayRoll[] = [];
+      this.diceTypes.forEach((type, i) => {
+        const adv = this.advantageFlags[i] || false;
+        const dis = this.disadvantageFlags[i] || false;
+        const paired = adv || dis;
+        if (paired) {
+          result.push({ type, diceSize: this.diceSize, advantage: adv, disadvantage: dis, result: 0, rollA: 0, rollB: null });
+          result.push({ type, diceSize: this.diceSize, advantage: adv, disadvantage: dis, result: 0, rollA: 0, rollB: null });
+        } else {
+          result.push({ type, diceSize: this.diceSize, advantage: false, disadvantage: false, result: 0, rollA: 0, rollB: null });
+        }
+      });
+      return result;
     }
     return [];
   }

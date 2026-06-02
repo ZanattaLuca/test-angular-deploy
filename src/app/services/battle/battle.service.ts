@@ -288,6 +288,7 @@ export class BattleService {
     const parts = rolls.map((r) => {
       let s = `dado ${r.type}(${r.diceSize}): ${r.result}`;
       if (r.advantage) s += ' [vantaggio]';
+      if (r.disadvantage) s += ' [svantaggio]';
       return s;
     });
     const damage = rolls.reduce((s, r) => s + r.result, 0);
