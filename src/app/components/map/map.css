@@ -1,0 +1,66 @@
+.map-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.map-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.edge {
+  stroke: #333;
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+
+.edge.active {
+  stroke: #daa520;
+  stroke-width: 3;
+  stroke-dasharray: none;
+}
+
+.node circle {
+  fill: #1a1a3e;
+  stroke: #2a2a5e;
+  stroke-width: 2;
+  transition: all 0.3s;
+}
+
+.node.visited circle {
+  fill: #1e2749;
+  stroke: #4a4a7e;
+}
+
+.node.current circle {
+  fill: #1a2749;
+  stroke: #daa520;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 6px rgba(218, 165, 32, 0.5));
+}
+
+.node-emoji {
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.node-label {
+  text-anchor: middle;
+  dominant-baseline: hanging;
+  font-size: 10px;
+  fill: #777;
+  pointer-events: none;
+}
+
+.node.visited .node-label {
+  fill: #999;
+}
+
+.node.current .node-label {
+  fill: #daa520;
+  font-weight: bold;
+}

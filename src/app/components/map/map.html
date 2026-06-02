@@ -1,0 +1,29 @@
+<div class="map-container">
+  <svg viewBox="0 0 480 460" class="map-svg">
+    @for (edge of allEdges; track edge.from + '-' + edge.to) {
+      @let fromNode = nodes.find(n => n.id === edge.from);
+      @let toNode = nodes.find(n => n.id === edge.to);
+      @if (fromNode && toNode) {
+        <line
+          [attr.x1]="fromNode.x"
+          [attr.y1]="fromNode.y"
+          [attr.x2]="toNode.x"
+          [attr.y2]="toNode.y"
+          [class.edge]="true"
+          [class.active]="isEdgeActive(edge.from, edge.to)"
+        />
+      }
+    }
+
+    @for (node of nodes; track node.id) {
+      <g
+        [class]="getNodeClass(node.id)"
+        [attr.transform]="'translate(' + node.x + ',' + node.y + ')'"
+      >
+        <circle cx="0" cy="0" r="22" />
+        <text y="5" class="node-emoji">{{ node.emoji }}</text>
+        <text y="37" class="node-label">{{ node.label }}</text>
+      </g>
+    }
+  </svg>
+</div>

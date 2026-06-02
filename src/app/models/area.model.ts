@@ -20,6 +20,7 @@ export const AREAS: Record<string, Area> = {
     choices: [
       { label: 'Entra nella grotta', target: 'cave' },
       { label: 'Supera l\'ingresso e prosegui verso la vallata', target: 'grassland' },
+      { label: 'Incamminati fuori dal sentiero verso il terreno accidentato', target: 'rough-terrain' },
     ],
   },
   cave: {
@@ -30,6 +31,7 @@ export const AREAS: Record<string, Area> = {
     choices: [
       { label: 'Sali verso il cunicolo illuminato', target: 'mountain' },
       { label: 'Segui il corso del fiume sotterraneo', target: 'waters-edge' },
+      { label: 'Torna verso l\'uscita della grotta', target: 'forest' },
     ],
   },
   mountain: {
@@ -40,6 +42,8 @@ export const AREAS: Record<string, Area> = {
     choices: [
       { label: 'Scendi per il ghiaione ripido e franoso', target: 'rough-terrain' },
       { label: 'Segui i pendii più dolci che scendono verso la pianura', target: 'grassland' },
+      { label: 'Rientra nella grotta buia', target: 'cave' },
+      { label: 'Scendi verso lo specchio d\'acqua', target: 'waters-edge' },
     ],
   },
   'rough-terrain': {
@@ -50,16 +54,19 @@ export const AREAS: Record<string, Area> = {
     choices: [
       { label: 'Addentrati nella fitta boscaglia', target: 'forest' },
       { label: 'Segui il torrente verso valle', target: 'waters-edge' },
+      { label: 'Risali il pendio verso la montagna', target: 'mountain' },
     ],
   },
   'waters-edge': {
     id: 'waters-edge',
     habitat: 9,
-    title: "WATERS-EDGE",
+    title: 'WATERS-EDGE',
     intro: 'Ti trovi sulla sponda di un grande specchio d\'acqua. Le onde si infrangono dolcemente. Puoi muoverti solo costeggiando la riva o arrampicandoti.',
     choices: [
       { label: 'Cammina dove la riva si fa piatta ed erbosa', target: 'grassland' },
       { label: 'Arrampicati sulla parete rocciosa che sovrasta l\'acqua', target: 'mountain' },
+      { label: 'Torna verso l\'imbocco della grotta', target: 'cave' },
+      { label: 'Addentrati nel terreno fangoso', target: 'rough-terrain' },
     ],
   },
   grassland: {
@@ -69,7 +76,18 @@ export const AREAS: Record<string, Area> = {
     intro: 'Cammini in una vasta e tranquilla distesa di valli erbose sotto il sole. All\'orizzonte la pianura si interrompe bruscamente.',
     choices: [
       { label: 'Incamminati verso la macchia di alberi secolari', target: 'forest' },
-      { label: 'Dirigiti verso la zona piena di fossati e fango', target: 'rough-terrain' },
+      { label: 'Dirigiti verso il Centro Pokémon', target: 'pokemon-center' },
+      { label: 'Sali dolcemente verso la montagna', target: 'mountain' },
+      { label: 'Dirigiti verso la riva del lago', target: 'waters-edge' },
+    ],
+  },
+  'pokemon-center': {
+    id: 'pokemon-center',
+    habitat: 0,
+    title: 'POKEMON CENTER',
+    intro: 'Benvenuto al Centro Pokémon! Qui puoi curare i tuoi Pokémon e riposare prima di ripartire all\'avventura.',
+    choices: [
+      { label: 'Torna alla prateria', target: 'grassland' },
     ],
   },
 };

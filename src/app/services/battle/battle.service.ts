@@ -59,7 +59,22 @@ export class BattleService {
     this.state.visitedAreas.update((v) =>
       v.includes(areaId) ? v : [...v, areaId],
     );
+    if (areaId === 'pokemon-center') {
+      this.healTeam();
+    }
     this.state.phase.set('area');
+  }
+
+  private healTeam(): void {
+    this.state.trainer.update((t) => ({
+      ...t,
+      pokemon: t.pokemon.map((p) => ({
+        ...p,
+        currentHp: p.maxHp,
+        status: null,
+      })),
+    }));
+    this.state.playerHp.set(this.state.playerMaxHp());
   }
 
   startEncounter(): void {
