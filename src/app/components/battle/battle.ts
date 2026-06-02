@@ -30,6 +30,7 @@ export class BattleComponent {
   readonly team = this.battle.team;
   readonly pokeballs = this.battle.pokeballs;
   readonly phase = this.battle.phase;
+  readonly switchAfterFaint = this.battle.switchAfterFaint;
 
   readonly catchSegments = signal(1);
   readonly showCatchWheel = signal(false);

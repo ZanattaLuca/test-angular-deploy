@@ -170,7 +170,9 @@
               <span class="switch-hp">{{ p.currentHp }}/{{ p.maxHp }}</span>
             </button>
           }
-          <button class="btn-back" (click)="onBack()">← Indietro</button>
+          @if (!switchAfterFaint()) {
+            <button class="btn-back" (click)="onBack()">← Indietro</button>
+          }
         </div>
       }
     </div>

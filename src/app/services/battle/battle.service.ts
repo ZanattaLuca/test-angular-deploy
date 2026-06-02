@@ -286,6 +286,10 @@ export class BattleService {
     if (pkmn.currentHp <= 0) {
       this.addBattleLog(`${pkmn.pokemon.name} è esausto!`, 'enemy');
       await this.checkTeamStatus();
+      if (this.state.phase() === 'battle') {
+        this.state.battleSubPhase.set('pokemon');
+        this.state.switchAfterFaint.set(true);
+      }
       return null;
     }
 
