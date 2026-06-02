@@ -5,6 +5,15 @@ import { Pokemon } from '../../models/pokemon.model';
 import { TeamPokemon, EnemyPokemonState, BattleSubPhase, BattleLogEntry } from '../../models/battle.model';
 import { Quest, QuestName, QuestStatus, createDefaultQuests } from '../../models/quest.model';
 import { AREAS, Area } from '../../models/area.model';
+import { TypeDiceRoll } from './dice.engine';
+
+export interface PendingAttack {
+  attackerName: string;
+  damage: number;
+  target: 'enemy' | 'player';
+  rolls: TypeDiceRoll[];
+  side: 'player' | 'enemy';
+}
 
 export class BattleState {
   readonly phase = signal<GamePhase>('intro');
@@ -39,4 +48,8 @@ export class BattleState {
   );
 
   readonly isFirstEncounter = signal(true);
+
+  readonly pendingAttack = signal<PendingAttack | null>(null);
+
+  readonly switchAfterFaint = signal(false);
 }

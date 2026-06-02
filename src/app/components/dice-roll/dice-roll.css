@@ -11,6 +11,26 @@
   cursor: pointer;
 }
 
+.dice-sprite {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  padding: 4px;
+  background: rgba(0, 0, 0, .4);
+}
+
+.dice-sprite-ally {
+  border-color: #2ecc71;
+  box-shadow: 0 0 18px rgba(46, 204, 113, .4);
+}
+
+.dice-sprite-enemy {
+  border-color: #e74c3c;
+  box-shadow: 0 0 18px rgba(231, 76, 60, .4);
+}
+
 .dice-container {
   display: flex;
   gap: 1rem;

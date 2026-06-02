@@ -84,6 +84,8 @@
       [diceSize]="getCurrentDiceSize()"
       [advantageFlags]="advantageFlags()"
       [disadvantageFlags]="disadvantageFlags()"
+      [pokemonSprite]="diceOwner() === 'player' ? (activePkmn()?.pokemon?.sprites?.front_default || null) : (enemyPkmn()?.pokemon?.sprites?.front_default || null)"
+      [spriteBorder]="diceOwner() === 'player' ? 'ally' : 'enemy'"
       (click)="dismissDice()"
     />
   }

@@ -10,6 +10,12 @@
 
   <hr class="area-divider" />
 
+  <div class="area-debug">
+    <button class="btn-debug" (click)="onDebug()">Debug: 2 Pokémon</button>
+  </div>
+
+  <hr class="area-divider" />
+
   <div class="area-choices-label">Oppure spostati in un&#39;altra zona:</div>
   <div class="area-choices">
     @for (choice of area().choices; track $index) {

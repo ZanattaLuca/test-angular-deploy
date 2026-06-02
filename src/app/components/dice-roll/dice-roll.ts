@@ -26,6 +26,8 @@ export class DiceRollComponent implements OnChanges {
   @Input() diceSize: DiceSize = 'd6';
   @Input() advantageFlags: boolean[] = [];
   @Input() disadvantageFlags: boolean[] = [];
+  @Input() pokemonSprite: string | null = null;
+  @Input() spriteBorder: 'ally' | 'enemy' | null = null;
 
   displayValues = signal<number[]>([]);
   private interval: ReturnType<typeof setInterval> | null = null;

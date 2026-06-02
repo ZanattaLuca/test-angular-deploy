@@ -4,7 +4,7 @@ import { BattleStats } from '../models/battle.model';
 
 const POKEAPI = 'https://pokeapi.co/api/v2';
 
-const GEN1_BASE_IDS = new Set([
+export const GEN1_BASE_IDS = new Set([
   1, 4, 7, 10, 13, 16, 19, 21, 23, 25, 27, 29, 32, 35, 37, 39, 41, 43, 46,
   48, 50, 52, 54, 56, 58, 60, 63, 66, 69, 72, 74, 77, 79, 81, 83, 84, 86,
   88, 90, 92, 95, 96, 98, 100, 102, 104, 106, 107, 108, 109, 111, 113, 114,

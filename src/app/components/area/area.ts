@@ -22,4 +22,8 @@ export class AreaComponent {
   onSearch(): void {
     this.battle.startEncounter();
   }
+
+  async onDebug(): Promise<void> {
+    await this.battle.debugAddRandomTeam();
+  }
 }

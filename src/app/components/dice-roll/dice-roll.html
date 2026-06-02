@@ -1,4 +1,13 @@
 <div class="dice-overlay">
+  @if (pokemonSprite) {
+    <img
+      class="dice-sprite"
+      [class.dice-sprite-ally]="spriteBorder === 'ally'"
+      [class.dice-sprite-enemy]="spriteBorder === 'enemy'"
+      [src]="pokemonSprite"
+      alt=""
+    />
+  }
   <div class="dice-container">
     @for (die of getDisplayDice(); track $index; let i = $index) {
       @if (rolling) {

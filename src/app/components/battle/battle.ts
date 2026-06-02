@@ -96,7 +96,7 @@ export class BattleComponent {
     this.dicePhase.set('rolling');
     this.diceRolls.set(null);
 
-    const minDelay = new Promise<void>((r) => setTimeout(r, 600));
+    const minDelay = new Promise<void>((r) => setTimeout(r, 900));
     const [rolls] = await Promise.all([this.battle.playerAttack(), minDelay]);
 
     if (rolls) {
@@ -118,6 +118,10 @@ export class BattleComponent {
     this.dicePhase.set('hidden');
     this.diceRolls.set(null);
 
+    await this.battle.resolveAttack();
+
+    if (this.phase() !== 'battle') return;
+
     if (this.diceOwner() === 'player' && this.shouldEnemyAct()) {
       await this.runEnemyAttack();
       return;
@@ -135,8 +139,8 @@ export class BattleComponent {
     this.dicePhase.set('rolling');
     this.diceRolls.set(null);
 
-    const minDelay = new Promise<void>((r) => setTimeout(r, 600));
-    const [rolls] = await Promise.all([this.battle.enemyAttack(), minDelay]);
+    const minDelay = new Promise<void>((r) => setTimeout(r, 900));
+    const [rolls] = await Promise.all([this.battle.deferredEnemyAttack(), minDelay]);
 
     if (rolls) {
       this.diceRolls.set(rolls);
@@ -150,6 +154,9 @@ export class BattleComponent {
   private shouldEnemyAct(): boolean {
     return (
       this.enemyPkmn() !== null &&
+      this.enemyPkmn()!.currentHp > 0 &&
+      this.activePkmn() !== null &&
+      this.activePkmn()!.currentHp > 0 &&
       this.phase() === 'battle' &&
       !this.battle.gameOver()
     );
@@ -174,7 +181,18 @@ export class BattleComponent {
   }
 
   async switchTo(i: number): Promise<void> {
-    await this.battle.switchPokemon(i);
+    const ok = await this.battle.switchPokemon(i);
+    if (!ok) return;
+
+    if (this.battle.switchAfterFaint()) {
+      this.battle.switchAfterFaint.set(false);
+      this.battle.battleSubPhase.set('idle');
+      return;
+    }
+
+    if (this.shouldEnemyAct()) {
+      await this.runEnemyAttack();
+    }
   }
 
   openCatch(): void {
@@ -221,12 +239,14 @@ export class BattleComponent {
     if (this.diceOwner() === 'player') {
       const p = this.activePkmn();
       if (!p) return [];
-      return p.pokemon.types.map((t) => t.type.name);
+      const types = p.pokemon.types.map((t) => t.type.name);
+      return types.length === 1 ? [types[0], types[0]] : types;
     }
     if (this.diceOwner() === 'enemy') {
       const e = this.enemyPkmn();
       if (!e) return [];
-      return e.pokemon.types.map((t) => t.type.name);
+      const types = e.pokemon.types.map((t) => t.type.name);
+      return types.length === 1 ? [types[0], types[0]] : types;
     }
     return [];
   }
