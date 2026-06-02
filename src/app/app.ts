@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { BattleService } from './services/battle.service';
+import { BattleService } from './services/battle';
 import { IntroComponent } from './components/intro/intro';
 import { AreaComponent } from './components/area/area';
 import { EncounterComponent } from './components/encounter/encounter';

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { BattleService } from '../../services/battle.service';
+import { BattleService } from '../../services/battle';
 
 @Component({
   selector: 'app-intro',

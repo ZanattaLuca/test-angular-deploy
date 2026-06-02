@@ -70,6 +70,20 @@
   border: 1px solid #e74c3c;
 }
 
+.dice-row {
+  display: flex;
+  gap: .4rem;
+}
+
+.dice-badge {
+  padding: .15rem .5rem;
+  border-radius: 6px;
+  font-size: .7rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+
 .hp-container {
   display: flex;
   align-items: center;
@@ -173,6 +187,8 @@
   cursor: not-allowed;
 }
 
+.btn-attack:hover:not(:disabled) { border-color: #e74c3c; }
+
 .btn-flee:hover:not(:disabled) { border-color: #e74c3c; }
 
 .sub-panel {
@@ -182,7 +198,6 @@
   padding: .5rem 0;
 }
 
-.btn-move,
 .btn-pkmn-switch,
 .btn-item {
   padding: .6rem 1rem;
@@ -198,40 +213,18 @@
   font-size: .9rem;
 }
 
-.btn-move:hover:not(:disabled),
 .btn-pkmn-switch:hover:not(:disabled),
 .btn-item:hover:not(:disabled) {
   border-color: #daa520;
   background: #1a2749;
 }
 
-.btn-move:disabled,
 .btn-pkmn-switch:disabled {
   opacity: .4;
   cursor: not-allowed;
 }
 
 .btn-pkmn-switch.active { border-color: #3498db; }
-
-.move-name { text-transform: capitalize; font-weight: bold; }
-
-.move-info {
-  display: flex;
-  gap: .4rem;
-  align-items: center;
-}
-
-.move-type {
-  padding: .1rem .4rem;
-  border-radius: 8px;
-  font-size: .7rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.move-power { font-size: .8rem; color: #888; }
-.move-pp { font-size: .75rem; color: #666; }
 
 .switch-name { text-transform: capitalize; font-weight: bold; }
 .switch-level { font-size: .8rem; color: #888; }

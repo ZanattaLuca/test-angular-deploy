@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, signal } from '@angular/core';
-import { BattleService } from '../../services/battle.service';
+import { BattleService } from '../../services/battle';
 import { PokemonService } from '../../services/pokemon.service';
 import { Pokemon, TYPE_COLORS } from '../../models/pokemon.model';
 import { CoinComponent } from '../coin/coin';

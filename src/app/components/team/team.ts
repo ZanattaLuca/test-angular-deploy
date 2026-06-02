@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { BattleService } from '../../services/battle.service';
+import { BattleService } from '../../services/battle';
 import { TYPE_COLORS } from '../../models/pokemon.model';
+import { DiceSize } from '../../models/evolution-data';
 
 @Component({
   selector: 'app-team',
@@ -17,5 +18,9 @@ export class TeamComponent {
 
   getTypeColor(type: string): string {
     return TYPE_COLORS[type] || '#999';
+  }
+
+  diceLabel(size: DiceSize): string {
+    return size.toUpperCase();
   }
 }

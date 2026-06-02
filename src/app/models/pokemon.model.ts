@@ -2,17 +2,6 @@ export interface PokemonType {
   type: { name: string };
 }
 
-export interface PokemonMoveVersionDetail {
-  level_learned_at: number;
-  move_learn_method: { name: string; url: string };
-  version_group: { name: string; url: string };
-}
-
-export interface PokemonMove {
-  move: { name: string; url: string };
-  version_group_details: PokemonMoveVersionDetail[];
-}
-
 export interface PokemonStat {
   base_stat: number;
   effort: number;
@@ -33,7 +22,6 @@ export interface Pokemon {
     };
   };
   types: PokemonType[];
-  moves?: PokemonMove[];
   stats?: PokemonStat[];
 }
 

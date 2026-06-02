@@ -15,6 +15,11 @@
               <span class="status-badge">{{ StatusNames[enemy.status] || enemy.status }}</span>
             }
           </div>
+          <div class="dice-row">
+            @for (t of enemy.pokemon.types; track t.type.name) {
+              <span class="dice-badge" [style.background]="getTypeColor(t.type.name)">{{ diceLabel(enemy.diceSize) }}</span>
+            }
+          </div>
           <div class="hp-container">
             <div class="hp-bar-bg">
               <div
@@ -48,6 +53,11 @@
               <span class="status-badge">{{ StatusNames[st] || st }}</span>
             }
           </div>
+          <div class="dice-row">
+            @for (t of getActivePkmnTypes(); track t) {
+              <span class="dice-badge" [style.background]="getTypeColor(t)">{{ diceLabel(activePkmn()?.diceSize || 'd6') }}</span>
+            }
+          </div>
           <div class="hp-container">
             <div class="hp-bar-bg">
               <div
@@ -64,6 +74,16 @@
         </div>
       </div>
     </div>
+  }
+
+  @if (dicePhase() !== 'hidden') {
+    <app-dice-roll
+      [rolls]="diceRolls()"
+      [rolling]="dicePhase() === 'rolling'"
+      [diceTypes]="getCurrentDiceTypes()"
+      [diceSize]="getCurrentDiceSize()"
+      (click)="dismissDice()"
+    />
   }
 
   @if (showCatchWheel()) {
@@ -91,7 +111,7 @@
     <div class="action-panel">
       @if (subPhase() === 'idle') {
         <div class="action-buttons">
-          <button class="btn-action" (click)="onFight()" [disabled]="busy()">Lotta</button>
+          <button class="btn-action btn-attack" (click)="onAttack()" [disabled]="busy()">Attacca</button>
           <button
             class="btn-action"
             (click)="onItem()"
@@ -144,31 +164,6 @@
               <span class="switch-name">{{ p.pokemon.name }}</span>
               <span class="switch-level">Lv.{{ p.level }}</span>
               <span class="switch-hp">{{ p.currentHp }}/{{ p.maxHp }}</span>
-            </button>
-          }
-          <button class="btn-back" (click)="onBack()">← Indietro</button>
-        </div>
-      }
-
-      @if (subPhase() === 'fight') {
-        <div class="sub-panel">
-          @for (move of activePkmn()?.moves; track move.name; let i = $index) {
-            <button
-              class="btn-move"
-              [disabled]="move.pp <= 0 || busy()"
-              (click)="useMove(i)"
-            >
-              <span class="move-name">{{ move.name }}</span>
-              <span class="move-info">
-                <span
-                  class="move-type"
-                  [style.background]="getTypeColor(move.type)"
-                >{{ move.type }}</span>
-                @if (move.damageClass !== 'status') {
-                  <span class="move-power">{{ move.power }}</span>
-                }
-                <span class="move-pp">{{ move.pp }}/{{ move.maxPp }}</span>
-              </span>
             </button>
           }
           <button class="btn-back" (click)="onBack()">← Indietro</button>

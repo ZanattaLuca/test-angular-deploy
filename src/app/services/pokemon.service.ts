@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Pokemon } from '../models/pokemon.model';
-import { BattleMove, BattleStats } from '../models/battle.model';
+import { BattleStats } from '../models/battle.model';
 
 const POKEAPI = 'https://pokeapi.co/api/v2';
 
@@ -12,19 +12,8 @@ const GEN1_BASE_IDS = new Set([
   137, 138, 140, 142, 143, 144, 145, 146, 147, 150, 151,
 ]);
 
-const STAT_NAMES: Record<string, keyof BattleStats> = {
-  hp: 'hp',
-  attack: 'attack',
-  defense: 'defense',
-  'special-attack': 'specialAttack',
-  'special-defense': 'specialDefense',
-  speed: 'speed',
-};
-
 @Injectable({ providedIn: 'root' })
 export class PokemonService {
-  private moveCache = new Map<string, BattleMove>();
-
   async getSpeciesByHabitat(habitatId: number): Promise<number[]> {
     const res = await fetch(`${POKEAPI}/pokemon-habitat/${habitatId}/`);
     const data = await res.json();
@@ -44,88 +33,16 @@ export class PokemonService {
     return res.json();
   }
 
-  async getMoveDetails(name: string): Promise<BattleMove> {
-    if (this.moveCache.has(name)) return this.moveCache.get(name)!;
-
-    const res = await fetch(`${POKEAPI}/move/${name}/`);
-    const data = await res.json();
-
-    const move: BattleMove = {
-      name: data.name,
-      power: data.power ?? 0,
-      accuracy: data.accuracy ?? 100,
-      pp: data.pp ?? 10,
-      maxPp: data.pp ?? 10,
-      type: data.type?.name ?? 'normal',
-      damageClass:
-        data.damage_class?.name === 'physical'
-          ? 'physical'
-          : data.damage_class?.name === 'special'
-            ? 'special'
-            : 'status',
-    };
-
-    this.moveCache.set(name, move);
-    return move;
-  }
-
-  async getLevelUpMoves(
-    pokemon: Pokemon,
-    level: number,
-  ): Promise<BattleMove[]> {
-    const movesList = pokemon.moves ?? [];
-    const levelUpMoves = movesList
-      .filter((m: { version_group_details: { move_learn_method: { name: string }; level_learned_at: number }[] }) =>
-        m.version_group_details.some(
-          (d: { move_learn_method: { name: string }; level_learned_at: number }) =>
-            d.move_learn_method.name === 'level-up' &&
-            d.level_learned_at <= level,
-        ),
-      )
-      .map((m: { move: { name: string }; version_group_details: { move_learn_method: { name: string }; level_learned_at: number }[] }) => ({
-        name: m.move.name,
-        learnedAt: Math.max(
-          ...m.version_group_details
-            .filter((d: { move_learn_method: { name: string }; level_learned_at: number }) => d.move_learn_method.name === 'level-up')
-            .map((d: { level_learned_at: number }) => d.level_learned_at),
-        ),
-      }))
-      .sort((a: { learnedAt: number }, b: { learnedAt: number }) => b.learnedAt - a.learnedAt)
-      .slice(0, 4);
-
-    const moves = await Promise.all(
-      levelUpMoves.map((m) => this.getMoveDetails(m.name)),
-    );
-
-    if (moves.length === 0) {
-      moves.push({
-        name: 'struggle',
-        power: 50,
-        accuracy: 100,
-        pp: 99,
-        maxPp: 99,
-        type: 'normal',
-        damageClass: 'physical',
-      });
-    }
-
-    return moves;
-  }
-
   calcStats(baseStats: BattleStats, level: number): BattleStats {
     const iv = 15;
-    const calc = (base: number) =>
-      Math.floor(((2 * base + iv) * level) / 100) + 5;
     const calcHp = (base: number) =>
       Math.floor(((2 * base + iv) * level) / 100) + level + 10;
+    const calcSpeed = (base: number) =>
+      Math.floor(((2 * base + iv) * level) / 100) + 5;
 
     return {
       hp: calcHp(baseStats.hp),
-      attack: calc(baseStats.attack),
-      defense: calc(baseStats.defense),
-      specialAttack: calc(baseStats.specialAttack),
-      specialDefense: calc(baseStats.specialDefense),
-      speed: calc(baseStats.speed),
+      speed: calcSpeed(baseStats.speed),
     };
   }
 
@@ -136,10 +53,6 @@ export class PokemonService {
     }
     return {
       hp: stats['hp'] ?? 50,
-      attack: stats['attack'] ?? 50,
-      defense: stats['defense'] ?? 50,
-      specialAttack: stats['special-attack'] ?? 50,
-      specialDefense: stats['special-defense'] ?? 50,
       speed: stats['speed'] ?? 50,
     };
   }
@@ -296,5 +209,9 @@ export class PokemonService {
       }
     }
     return multiplier;
+  }
+
+  isSuperEffective(attackingType: string, defenderTypes: string[]): boolean {
+    return this.getTypeEffectiveness(attackingType, defenderTypes) >= 2;
   }
 }

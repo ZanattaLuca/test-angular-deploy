@@ -1,32 +1,12 @@
 import { Pokemon } from './pokemon.model';
+import { DiceSize } from './evolution-data';
 
-export type StatusEffect =
-  | 'paralyzed'
-  | 'poisoned'
-  | 'burned'
-  | 'frozen'
-  | 'sleep';
+export type StatusEffect = 'paralyzed' | 'burned' | 'frozen';
 
-export type DamageClass = 'physical' | 'special' | 'status';
-
-export type BattleSubPhase = 'idle' | 'fight' | 'item' | 'pokemon' | 'flee';
-
-export interface BattleMove {
-  name: string;
-  power: number;
-  accuracy: number;
-  pp: number;
-  maxPp: number;
-  type: string;
-  damageClass: DamageClass;
-}
+export type BattleSubPhase = 'idle' | 'item' | 'pokemon' | 'flee';
 
 export interface BattleStats {
   hp: number;
-  attack: number;
-  defense: number;
-  specialAttack: number;
-  specialDefense: number;
   speed: number;
 }
 
@@ -37,7 +17,7 @@ export interface TeamPokemon {
   currentHp: number;
   maxHp: number;
   stats: BattleStats;
-  moves: BattleMove[];
+  diceSize: DiceSize;
   status: StatusEffect | null;
 }
 
@@ -52,7 +32,7 @@ export interface WildPokemonState {
   currentHp: number;
   maxHp: number;
   stats: BattleStats;
-  moves: BattleMove[];
+  diceSize: DiceSize;
   status: StatusEffect | null;
   baseExperience: number;
 }
@@ -61,8 +41,6 @@ export type EnemyPokemonState = WildPokemonState;
 
 export const STATUS_NAMES: Record<StatusEffect, string> = {
   paralyzed: 'Paralizzato',
-  poisoned: 'Avvelenato',
   burned: 'Scottato',
   frozen: 'Congelato',
-  sleep: 'Addormentato',
 };

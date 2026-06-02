@@ -1,14 +1,16 @@
 import { Component, inject, signal } from '@angular/core';
-import { BattleService } from '../../services/battle.service';
+import { BattleService, TypeDiceRoll } from '../../services/battle';
 import { TYPE_COLORS } from '../../models/pokemon.model';
 import { STATUS_NAMES } from '../../models/battle.model';
+import { DiceSize } from '../../models/evolution-data';
 import { CoinComponent } from '../coin/coin';
 import { WheelComponent } from '../wheel/wheel';
+import { DiceRollComponent } from '../dice-roll/dice-roll';
 
 @Component({
   selector: 'app-battle',
   standalone: true,
-  imports: [CoinComponent, WheelComponent],
+  imports: [CoinComponent, WheelComponent, DiceRollComponent],
   templateUrl: './battle.html',
   styleUrl: './battle.css',
 })
@@ -25,11 +27,16 @@ export class BattleComponent {
   readonly log = this.battle.battleLog;
   readonly team = this.battle.team;
   readonly pokeballs = this.battle.pokeballs;
+  readonly phase = this.battle.phase;
 
   readonly catchSegments = signal(1);
   readonly showCatchWheel = signal(false);
   readonly catchingResult = signal<string | null>(null);
   readonly catching = signal(false);
+
+  readonly dicePhase = signal<'hidden' | 'rolling' | 'revealed'>('hidden');
+  readonly diceRolls = signal<TypeDiceRoll[] | null>(null);
+  readonly diceOwner = signal<'none' | 'player' | 'enemy'>('none');
 
   getTypeColor(type: string): string {
     return TYPE_COLORS[type] || '#999';
@@ -57,8 +64,71 @@ export class BattleComponent {
     return p ? Math.pow(p.level + 1, 3) : 0;
   }
 
-  onFight(): void {
-    this.battle.battleSubPhase.set('fight');
+  diceLabel(size: DiceSize): string {
+    return size.toUpperCase();
+  }
+
+  async onAttack(): Promise<void> {
+    if (this.busy()) return;
+
+    this.diceOwner.set('player');
+    this.dicePhase.set('rolling');
+    this.diceRolls.set(null);
+
+    const minDelay = new Promise<void>((r) => setTimeout(r, 600));
+    const [rolls] = await Promise.all([this.battle.playerAttack(), minDelay]);
+
+    if (rolls) {
+      this.diceRolls.set(rolls);
+      this.dicePhase.set('revealed');
+      return;
+    }
+
+    if (this.shouldEnemyAct()) {
+      await this.runEnemyAttack();
+    } else {
+      this.dicePhase.set('hidden');
+      this.diceOwner.set('none');
+    }
+  }
+
+  async dismissDice(): Promise<void> {
+    if (this.dicePhase() !== 'revealed') return;
+    this.dicePhase.set('hidden');
+    this.diceRolls.set(null);
+
+    if (this.diceOwner() === 'player' && this.shouldEnemyAct()) {
+      await this.runEnemyAttack();
+      return;
+    }
+
+    this.diceOwner.set('none');
+    this.battle.battleBusy.set(false);
+  }
+
+  private async runEnemyAttack(): Promise<void> {
+    this.diceOwner.set('enemy');
+    this.dicePhase.set('rolling');
+    this.diceRolls.set(null);
+
+    const minDelay = new Promise<void>((r) => setTimeout(r, 600));
+    const [rolls] = await Promise.all([this.battle.enemyAttack(), minDelay]);
+
+    if (rolls) {
+      this.diceRolls.set(rolls);
+      this.dicePhase.set('revealed');
+    } else {
+      this.dicePhase.set('hidden');
+      this.diceOwner.set('none');
+    }
+  }
+
+  private shouldEnemyAct(): boolean {
+    return (
+      this.enemyPkmn() !== null &&
+      this.phase() === 'battle' &&
+      !this.battle.gameOver()
+    );
   }
 
   onItem(): void {
@@ -79,10 +149,6 @@ export class BattleComponent {
     this.catchingResult.set(null);
   }
 
-  async useMove(i: number): Promise<void> {
-    await this.battle.useMove(i);
-  }
-
   async switchTo(i: number): Promise<void> {
     await this.battle.switchPokemon(i);
   }
@@ -91,7 +157,9 @@ export class BattleComponent {
     const enemy = this.enemyPkmn();
     if (!enemy) return;
     const hpRemaining = 1 - enemy.currentHp / enemy.maxHp;
-    let segs = Math.round(14 * hpRemaining * hpRemaining + 3 * hpRemaining + 1);
+    let segs = Math.round(
+      14 * hpRemaining * hpRemaining + 3 * hpRemaining + 1,
+    );
     if (enemy.status) segs = 18;
     segs = Math.min(20, Math.max(1, segs));
     this.catchSegments.set(segs);
@@ -101,9 +169,7 @@ export class BattleComponent {
 
   onCatchResult(success: boolean): void {
     this.catching.set(false);
-    this.catchingResult.set(
-      success ? 'Catturato!' : 'Sfuggito...',
-    );
+    this.catchingResult.set(success ? 'Catturato!' : 'Sfuggito...');
     if (success) {
       setTimeout(async () => {
         await this.battle.onPokeballResult(true);
@@ -125,5 +191,35 @@ export class BattleComponent {
     } else {
       this.battle.onFleeFailed();
     }
+  }
+
+  getCurrentDiceTypes(): string[] {
+    if (this.diceOwner() === 'player') {
+      const p = this.activePkmn();
+      if (!p) return [];
+      return p.pokemon.types.map((t) => t.type.name);
+    }
+    if (this.diceOwner() === 'enemy') {
+      const e = this.enemyPkmn();
+      if (!e) return [];
+      return e.pokemon.types.map((t) => t.type.name);
+    }
+    return [];
+  }
+
+  getCurrentDiceSize(): DiceSize {
+    if (this.diceOwner() === 'player') {
+      return this.activePkmn()?.diceSize ?? 'd6';
+    }
+    if (this.diceOwner() === 'enemy') {
+      return this.enemyPkmn()?.diceSize ?? 'd6';
+    }
+    return 'd6';
+  }
+
+  getActivePkmnTypes(): string[] {
+    const p = this.activePkmn();
+    if (!p) return [];
+    return p.pokemon.types.map((t) => t.type.name);
   }
 }
