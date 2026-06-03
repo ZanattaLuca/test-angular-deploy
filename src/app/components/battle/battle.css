@@ -7,36 +7,56 @@
   gap: 1rem;
 }
 
-.battle-field {
+.battle-arena {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: .5rem;
-}
-
-.enemy-area,
-.player-area {
+  gap: .25rem;
   background: linear-gradient(145deg, #16213e, #0f3460);
   border-radius: 16px;
   padding: 1rem;
   border: 2px solid #1a1a3e;
 }
 
-.enemy-area { border-color: #3e1a1a; }
-
-.player-area { border-color: #2a2a5e; }
-
-.pokemon-display {
+.arena-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .4rem;
+  justify-content: space-between;
+}
+
+.arena-enemy-row {
+  align-items: flex-start;
+}
+
+.arena-enemy-row .battle-sprite {
+  margin-top: .75rem;
+}
+
+.arena-player-row {
+  align-items: flex-end;
+}
+
+.arena-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.arena-player-info {
+  text-align: right;
+}
+
+.arena-player-info .pkmn-info {
+  justify-content: flex-end;
+}
+
+.arena-player-info .dice-row {
+  justify-content: flex-end;
 }
 
 .battle-sprite {
   width: 100px;
   height: 100px;
   image-rendering: pixelated;
+  flex-shrink: 0;
 }
 
 .enemy-sprite { filter: drop-shadow(0 4px 12px rgba(231,76,60,.3)); }
@@ -73,12 +93,13 @@
 .dice-row {
   display: flex;
   gap: .4rem;
+  margin: .25rem 0;
 }
 
 .dice-badge {
-  padding: .15rem .5rem;
+  padding: .1rem .5rem;
   border-radius: 6px;
-  font-size: .7rem;
+  font-size: .65rem;
   font-weight: bold;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0,0,0,.4);
@@ -89,34 +110,35 @@
   align-items: center;
   gap: .5rem;
   width: 100%;
-  max-width: 250px;
 }
 
 .hp-bar-bg {
   flex: 1;
-  height: 10px;
+  height: 14px;
   background: #1a1a3e;
-  border-radius: 5px;
+  border-radius: 7px;
   overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
 }
 
 .hp-bar-fill {
   height: 100%;
-  border-radius: 5px;
-  transition: width .3s, background .3s;
+  border-radius: 7px;
+  transition: width .4s ease, background .3s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
 }
 
 .hp-text {
-  font-size: .75rem;
-  color: #888;
+  font-size: .8rem;
+  color: #bbb;
   min-width: 4.5rem;
   text-align: right;
+  font-weight: bold;
 }
 
 .xp-bar-bg {
   width: 100%;
-  max-width: 250px;
-  height: 3px;
+  height: 4px;
   background: #1a1a3e;
   border-radius: 2px;
   overflow: hidden;
@@ -131,6 +153,7 @@
 }
 
 .battle-log-area {
+  width: 100%;
   background: rgba(0,0,0,.3);
   border-radius: 10px;
   padding: .5rem 1rem;

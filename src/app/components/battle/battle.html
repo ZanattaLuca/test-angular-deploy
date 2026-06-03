@@ -1,13 +1,8 @@
 <div class="battle-module">
   @if (enemyPkmn(); as enemy) {
-    <div class="battle-field">
-      <div class="enemy-area">
-        <div class="pokemon-display">
-          <img
-            class="battle-sprite enemy-sprite"
-            [src]="enemy.pokemon.sprites.front_default || enemy.pokemon.sprites.other['official-artwork'].front_default"
-            [alt]="enemy.pokemon.name"
-          />
+    <div class="battle-arena">
+      <div class="arena-row arena-enemy-row">
+        <div class="arena-info">
           <div class="pkmn-info">
             <span class="pkmn-name">{{ enemy.pokemon.name }}</span>
             <span class="pkmn-level">Lv.{{ enemy.level }}</span>
@@ -20,7 +15,7 @@
               <span class="dice-badge" [style.background]="getTypeColor(t.type.name)">{{ diceLabel(enemy.diceSize) }}</span>
             }
           </div>
-          <div class="hp-container">
+            <div class="hp-container">
             <div class="hp-bar-bg">
               <div
                 class="hp-bar-fill"
@@ -28,24 +23,22 @@
                 [style.background]="hpBarColor(hpPercent(enemy.currentHp, enemy.maxHp))"
               ></div>
             </div>
-            <span class="hp-text">{{ enemy.currentHp }}/{{ enemy.maxHp }}</span>
           </div>
         </div>
+        <img
+          class="battle-sprite enemy-sprite"
+          [src]="enemy.pokemon.sprites.front_default || enemy.pokemon.sprites.other['official-artwork'].front_default"
+          [alt]="enemy.pokemon.name"
+        />
       </div>
 
-      <div class="battle-log-area">
-        @for (entry of log(); track $index) {
-          <p class="log-msg" [class.log-player]="entry.side === 'player'" [class.log-enemy]="entry.side === 'enemy'">{{ entry.text }}</p>
-        }
-      </div>
-
-      <div class="player-area">
-        <div class="pokemon-display">
-          <img
-            class="battle-sprite player-sprite"
-            [src]="activePkmn()?.pokemon?.sprites?.back_default || activePkmn()?.pokemon?.sprites?.front_default"
-            [alt]="activePkmn()?.pokemon?.name"
-          />
+      <div class="arena-row arena-player-row">
+        <img
+          class="battle-sprite player-sprite"
+          [src]="activePkmn()?.pokemon?.sprites?.back_default || activePkmn()?.pokemon?.sprites?.front_default"
+          [alt]="activePkmn()?.pokemon?.name"
+        />
+        <div class="arena-info arena-player-info">
           <div class="pkmn-info">
             <span class="pkmn-name">{{ activePkmn()?.pokemon?.name }}</span>
             <span class="pkmn-level">Lv.{{ activePkmn()?.level }}</span>
@@ -58,7 +51,7 @@
               <span class="dice-badge" [style.background]="getTypeColor(t)">{{ diceLabel(activePkmn()?.diceSize || 'd6') }}</span>
             }
           </div>
-          <div class="hp-container">
+            <div class="hp-container">
             <div class="hp-bar-bg">
               <div
                 class="hp-bar-fill"
@@ -66,7 +59,6 @@
                 [style.background]="hpBarColor(hpPercent(activePkmn()?.currentHp ?? 0, activePkmn()?.maxHp ?? 1))"
               ></div>
             </div>
-            <span class="hp-text">{{ activePkmn()?.currentHp ?? 0 }}/{{ activePkmn()?.maxHp ?? 0 }}</span>
           </div>
           <div class="xp-bar-bg">
             <div class="xp-bar-fill" [style.width.%]="xpPercent()"></div>
@@ -75,6 +67,12 @@
       </div>
     </div>
   }
+
+  <div class="battle-log-area">
+    @for (entry of log(); track $index) {
+      <p class="log-msg" [class.log-player]="entry.side === 'player'" [class.log-enemy]="entry.side === 'enemy'">{{ entry.text }}</p>
+    }
+  </div>
 
   @if (dicePhase() !== 'hidden') {
     <app-dice-roll
