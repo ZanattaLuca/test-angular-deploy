@@ -53,10 +53,17 @@
 }
 
 .battle-sprite {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   image-rendering: pixelated;
   flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .battle-sprite {
+    width: 250px;
+    height: 250px;
+  }
 }
 
 .enemy-sprite { filter: drop-shadow(0 4px 12px rgba(231,76,60,.3)); }
