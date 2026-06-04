@@ -3,13 +3,16 @@
 body {
   display: flex;
   flex-direction: column;
-  align-items: center;
   min-height: 100vh;
   background: #1a1a2e;
   font-family: system-ui, sans-serif;
   color: #e0e0e0;
   padding: 2rem 1rem;
   gap: 1.5rem;
+}
+
+app-root {
+  display: block;
 }
 
 .btn {
