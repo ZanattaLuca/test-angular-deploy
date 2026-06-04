@@ -36,6 +36,9 @@
               (dragover)="onDragOver($event, i)"
               (drop)="onDrop($event, i)"
               (dragend)="onDragEnd()"
+              (touchstart)="onTouchStart($event, i)"
+              (touchmove)="onTouchMove($event)"
+              (touchend)="onTouchEnd()"
             >
               @if (i === 0) {
                 <span class="first-badge">First in battle</span>

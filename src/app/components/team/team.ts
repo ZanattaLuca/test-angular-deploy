@@ -21,6 +21,12 @@ export class TeamComponent {
   draggingIndex = signal<number | null>(null);
   dragOverIndex = signal<number | null>(null);
 
+  touchDragging = signal(false);
+  touchFromIndex = signal<number | null>(null);
+  private touchStartY = 0;
+  private touchCardHeight = 0;
+  private dragEl: HTMLElement | null = null;
+
   toggle(): void {
     this.isOpen.update((v) => !v);
   }
@@ -75,6 +81,70 @@ export class TeamComponent {
   }
 
   onDragEnd(): void {
+    this.draggingIndex.set(null);
+    this.dragOverIndex.set(null);
+  }
+
+  onTouchStart(event: TouchEvent, index: number): void {
+    const touch = event.touches[0];
+    this.touchStartY = touch.clientY;
+    this.touchFromIndex.set(index);
+    this.touchDragging.set(false);
+    this.dragOverIndex.set(null);
+    this.dragEl = (event.currentTarget as HTMLElement).closest('.team-card') as HTMLElement;
+    if (this.dragEl) {
+      this.touchCardHeight = this.dragEl.offsetHeight + 8; /* gap */
+    }
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    if (this.touchFromIndex() === null) return;
+
+    const touch = event.touches[0];
+    const deltaY = touch.clientY - this.touchStartY;
+
+    if (!this.touchDragging()) {
+      if (Math.abs(deltaY) > 8) {
+        this.touchDragging.set(true);
+        this.draggingIndex.set(this.touchFromIndex());
+      } else {
+        return;
+      }
+    }
+
+    const fromIdx = this.touchFromIndex()!;
+    const shift = Math.round(deltaY / this.touchCardHeight);
+    let toIdx = fromIdx + shift;
+    toIdx = Math.max(0, Math.min(this.team().length - 1, toIdx));
+
+    this.dragOverIndex.set(toIdx !== fromIdx ? toIdx : null);
+
+    if (this.dragEl) {
+      this.dragEl.style.transform = `translateY(${deltaY}px)`;
+      this.dragEl.style.zIndex = '10';
+      this.dragEl.style.transition = 'none';
+    }
+
+    event.preventDefault();
+  }
+
+  onTouchEnd(): void {
+    const fromIdx = this.touchFromIndex();
+    const toIdx = this.dragOverIndex();
+
+    if (this.dragEl) {
+      this.dragEl.style.transform = '';
+      this.dragEl.style.zIndex = '';
+      this.dragEl.style.transition = '';
+      this.dragEl = null;
+    }
+
+    if (this.touchDragging() && fromIdx !== null && toIdx !== null && fromIdx !== toIdx) {
+      this.battle.reorderTeam(fromIdx, toIdx);
+    }
+
+    this.touchDragging.set(false);
+    this.touchFromIndex.set(null);
     this.draggingIndex.set(null);
     this.dragOverIndex.set(null);
   }
