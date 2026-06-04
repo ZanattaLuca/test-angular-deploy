@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { BattleService } from '../../services/battle';
 import { TYPE_COLORS } from '../../models/pokemon.model';
+import { TeamPokemon } from '../../models/battle.model';
 import { DiceSize } from '../../models/evolution-data';
 
 @Component({
@@ -22,5 +23,10 @@ export class TeamComponent {
 
   diceLabel(size: DiceSize): string {
     return size.toUpperCase();
+  }
+
+  getPkmnDiceTypes(tp: TeamPokemon): string[] {
+    const types = tp.pokemon.types.map((t) => t.type.name);
+    return types.length === 1 ? [types[0], types[0]] : types;
   }
 }

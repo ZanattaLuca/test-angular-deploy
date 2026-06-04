@@ -283,6 +283,11 @@ export class BattleService {
 
     pkmn.currentHp = Math.max(0, pkmn.currentHp - result.damage);
 
+    this.state.trainer.update(t => ({
+      ...t,
+      pokemon: t.pokemon.map(p => ({ ...p })),
+    }));
+
     if (pkmn.currentHp <= 0) {
       this.addBattleLog(`${pkmn.pokemon.name} è esausto!`, 'enemy');
       await this.checkTeamStatus();
@@ -373,6 +378,15 @@ export class BattleService {
 
     this.state.pendingAttack.set(null);
 
+    const updatedEnemy = this.state.enemyPokemon();
+    if (updatedEnemy) {
+      this.state.enemyPokemon.set({ ...updatedEnemy });
+    }
+    this.state.trainer.update(t => ({
+      ...t,
+      pokemon: t.pokemon.map(p => ({ ...p })),
+    }));
+
     if (enemy.currentHp <= 0) {
       this.addBattleLog(`${enemy.pokemon.name} è esausto!`, 'player');
       await this.onEnemyDefeated();
@@ -421,6 +435,10 @@ export class BattleService {
         p.currentHp = p.maxHp;
         p.status = null;
       });
+      this.state.trainer.update(t => ({
+        ...t,
+        pokemon: t.pokemon.map(p => ({ ...p })),
+      }));
       this.addBattleLog(
         "Tutti i Pokémon sono esausti. Torna all'area.",
         'player',
@@ -450,6 +468,11 @@ export class BattleService {
         this.addBattleLog(msg, 'player');
       }
     }
+
+    this.state.trainer.update(t => ({
+      ...t,
+      pokemon: t.pokemon.map(p => ({ ...p })),
+    }));
 
     this.addBattleLog(`XP guadagnata: +${xpEach}`, 'player');
     await this.delay(800);

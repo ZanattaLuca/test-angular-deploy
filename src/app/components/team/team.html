@@ -24,8 +24,8 @@
             }
           </div>
           <div class="team-dice">
-            @for (t of tp.pokemon.types; track t.type.name) {
-              <span class="dice-tag" [style.background]="getTypeColor(t.type.name)">{{ diceLabel(tp.diceSize) }}</span>
+            @for (t of getPkmnDiceTypes(tp); track t) {
+              <span class="dice-tag" [style.background]="getTypeColor(t)">{{ diceLabel(tp.diceSize) }}</span>
             }
           </div>
         </div>

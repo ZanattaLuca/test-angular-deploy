@@ -11,8 +11,8 @@
             }
           </div>
           <div class="dice-row">
-            @for (t of enemy.pokemon.types; track t.type.name) {
-              <span class="dice-badge" [style.background]="getTypeColor(t.type.name)">{{ diceLabel(enemy.diceSize) }}</span>
+            @for (t of getEnemyPkmnTypes(); track t) {
+              <span class="dice-badge" [style.background]="getTypeColor(t)">{{ diceLabel(enemy.diceSize) }}</span>
             }
           </div>
             <div class="hp-container">

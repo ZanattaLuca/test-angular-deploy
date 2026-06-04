@@ -265,6 +265,14 @@ export class BattleComponent {
   getActivePkmnTypes(): string[] {
     const p = this.activePkmn();
     if (!p) return [];
-    return p.pokemon.types.map((t) => t.type.name);
+    const types = p.pokemon.types.map((t) => t.type.name);
+    return types.length === 1 ? [types[0], types[0]] : types;
+  }
+
+  getEnemyPkmnTypes(): string[] {
+    const e = this.enemyPkmn();
+    if (!e) return [];
+    const types = e.pokemon.types.map((t) => t.type.name);
+    return types.length === 1 ? [types[0], types[0]] : types;
   }
 }
