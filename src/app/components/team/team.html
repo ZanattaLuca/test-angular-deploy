@@ -1,35 +1,93 @@
-<div class="team-module">
-  <h3 class="team-title">Squadra di {{ trainer().name }}</h3>
+<button class="team-toggle-btn" (click)="toggle()">
+  <svg class="team-btn-icon" viewBox="0 0 24 24" width="22" height="22">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M2 12 h20" stroke="currentColor" stroke-width="2"/>
+    <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+  </svg>
+  <span>Your Pokémon</span>
+  @if (team().length) {
+    <span class="team-btn-count">{{ team().length }}</span>
+  }
+</button>
 
-  @if (team().length === 0) {
-    <p class="team-empty">Nessun Pokémon catturato. Esplora le zone e cattura i Pokémon!</p>
-  } @else {
-    <div class="team-grid">
-      @for (tp of team(); track tp.pokemon.id) {
-        <div class="team-card">
-          <img
-            class="team-sprite"
-            [src]="tp.pokemon.sprites.other['official-artwork'].front_default || tp.pokemon.sprites.front_default"
-            [alt]="tp.pokemon.name"
-          />
-          <div class="team-name">{{ tp.pokemon.name }}</div>
-          <div class="team-level">Lv.{{ tp.level }}</div>
-          <div class="team-hp">HP: {{ tp.currentHp }}/{{ tp.maxHp }}</div>
-          <div class="team-id">#{{ tp.pokemon.id.toString().padStart(4, '0') }}</div>
-          <div class="team-types">
-            @for (t of tp.pokemon.types; track t.type.name) {
-              <span class="type-badge" [style.background]="getTypeColor(t.type.name)">
-                {{ t.type.name }}
-              </span>
-            }
-          </div>
-          <div class="team-dice">
-            @for (t of getPkmnDiceTypes(tp); track t) {
-              <span class="dice-tag" [style.background]="getTypeColor(t)">{{ diceLabel(tp.diceSize) }}</span>
-            }
-          </div>
+@if (isOpen()) {
+  <div class="team-overlay" (click)="close()">
+    <div class="team-panel" (click)="$event.stopPropagation()">
+      <header class="team-panel-header">
+        <h2 class="team-panel-title">Your Pokémon</h2>
+        <button class="team-panel-close" (click)="close()">&times;</button>
+      </header>
+
+      @if (team().length === 0) {
+        <p class="team-empty">No Pokémon caught yet. Explore areas and catch Pokémon!</p>
+      } @else {
+        <p class="team-hint">Drag to reorder — the first one enters battle first</p>
+
+        <div class="team-list">
+          @for (tp of team(); track tp.pokemon.id; let i = $index) {
+            <div
+              class="team-card"
+              [class.exhausted]="tp.currentHp <= 0"
+              [class.dragging]="draggingIndex() === i"
+              [class.drag-over]="dragOverIndex() === i && draggingIndex() !== i"
+              draggable="true"
+              (dragstart)="onDragStart($event, i)"
+              (dragover)="onDragOver($event, i)"
+              (drop)="onDrop($event, i)"
+              (dragend)="onDragEnd()"
+            >
+              @if (i === 0) {
+                <span class="first-badge">First in battle</span>
+              }
+
+              <img
+                class="team-sprite"
+                [src]="tp.pokemon.sprites.other['official-artwork'].front_default || tp.pokemon.sprites.front_default"
+                [alt]="tp.pokemon.name"
+                draggable="false"
+              />
+
+              <div class="team-info">
+                <div class="team-name-row">
+                  <span class="team-name">{{ tp.pokemon.name }}</span>
+                  <span class="team-level">Lv.{{ tp.level }}</span>
+                  @if (tp.currentHp <= 0) {
+                    <span class="exhausted-tag">EXHAUSTED</span>
+                  }
+                </div>
+
+                <div class="team-types">
+                  @for (t of tp.pokemon.types; track t.type.name) {
+                    <span class="type-badge" [style.background]="getTypeColor(t.type.name)">
+                      {{ t.type.name }}
+                    </span>
+                  }
+                </div>
+
+                <div class="team-dice">
+                  @for (t of getPkmnDiceTypes(tp); track t) {
+                    <span class="dice-tag" [style.background]="getTypeColor(t)">
+                      {{ diceLabel(tp.diceSize) }}
+                    </span>
+                  }
+                </div>
+
+                <div class="hp-container">
+                  <div class="hp-bar-bg">
+                    <div
+                      class="hp-bar-fill"
+                      [style.width.%]="hpPercent(tp.currentHp, tp.maxHp)"
+                      [style.background]="hpBarColor(hpPercent(tp.currentHp, tp.maxHp))"
+                    ></div>
+                  </div>
+                  <span class="hp-text">{{ tp.currentHp }}/{{ tp.maxHp }}</span>
+                </div>
+              </div>
+            </div>
+          }
         </div>
       }
     </div>
-  }
-</div>
+  </div>
+}

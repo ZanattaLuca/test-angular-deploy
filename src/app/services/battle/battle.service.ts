@@ -95,6 +95,24 @@ export class BattleService {
     return this.state.trainer().pokemon.some((p) => p.pokemon.id === id);
   }
 
+  reorderTeam(fromIndex: number, toIndex: number): void {
+    this.state.trainer.update((t) => {
+      const pokemon = [...t.pokemon];
+      const [moved] = pokemon.splice(fromIndex, 1);
+      pokemon.splice(toIndex, 0, moved);
+      return { ...t, pokemon };
+    });
+
+    const current = this.state.activePokemonIndex();
+    if (current === fromIndex) {
+      this.state.activePokemonIndex.set(toIndex);
+    } else if (fromIndex < current && toIndex >= current) {
+      this.state.activePokemonIndex.set(current - 1);
+    } else if (fromIndex > current && toIndex <= current) {
+      this.state.activePokemonIndex.set(current + 1);
+    }
+  }
+
   dismissPokemon(): void {
     this.state.currentPokemon.set(null);
     this.state.phase.set('encounter');
