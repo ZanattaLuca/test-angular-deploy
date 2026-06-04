@@ -2,36 +2,31 @@
   <div class="area-title">{{ area().title }}</div>
   <app-map />
 
-  <p class="area-intro">{{ area().intro }}</p>
-
   @if (isAtPokeCenter) {
     <div class="poke-center-heal">
       <span class="heal-icon">💖</span>
-      <p>I tuoi Pokémon sono stati completamente curati!</p>
+      <p>Your Pokémon have been fully healed!</p>
     </div>
   }
 
   @if (!isAtPokeCenter) {
     <div class="area-actions">
-      <button class="btn-search-area" (click)="onSearch()">Cerca Pokémon</button>
+      <button class="btn-search-area" (click)="onSearch()">Search Pokémon</button>
     </div>
   }
 
-  <hr class="area-divider" />
-
-  <div class="area-debug">
-    <button class="btn-debug" (click)="onDebug()">Debug: 2 Pokémon</button>
-  </div>
-
-  <hr class="area-divider" />
-
-  <div class="area-choices-label">Spostati in un&#39;altra zona:</div>
   <div class="area-choices">
     @for (choice of area().choices; track $index) {
       <button class="btn-choice" (click)="onMove(choice)">
         {{ choice.label }}
       </button>
     }
+  </div>
+
+  <hr class="area-divider" />
+
+  <div class="area-debug">
+    <button class="btn-debug" (click)="onDebug()">Debug: 2 Pokémon</button>
   </div>
 
   <app-team />
