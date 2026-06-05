@@ -8,7 +8,9 @@
       class="wheel-canvas"
     ></canvas>
   </div>
-  <button class="wheel-btn" (click)="spin()" [disabled]="btnDisabled">
-    Lancia la Poké Ball
-  </button>
+  @if (!hideButton()) {
+    <button class="wheel-btn" (click)="spin()" [disabled]="btnDisabled">
+      Launch Ball
+    </button>
+  }
 </div>

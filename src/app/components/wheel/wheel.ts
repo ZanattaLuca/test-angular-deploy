@@ -17,6 +17,7 @@ const WHEEL_COLORS = [
 export class WheelComponent {
   readonly catchSegments = input(1);
   readonly size = input(280);
+  readonly hideButton = input(false);
   readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   readonly wheelResult = output<boolean>();
 
@@ -35,7 +36,7 @@ export class WheelComponent {
     const ctx = this.ctx;
     if (!ctx) return;
 
-    const n = 20;
+    const n = 12;
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
     const r = Math.min(cx, cy) - 10;
@@ -114,7 +115,7 @@ export class WheelComponent {
   }
 
   private getResult(): boolean {
-    const n = 20;
+    const n = 12;
     const slice = (2 * Math.PI) / n;
     const a =
       ((-Math.PI / 2 - this.angle) % (2 * Math.PI) + 2 * Math.PI) %

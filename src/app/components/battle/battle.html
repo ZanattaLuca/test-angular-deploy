@@ -90,24 +90,36 @@
 
   @if (showCatchWheel()) {
     <div class="catch-overlay">
-      @if (catching()) {
-        <app-wheel
-          [catchSegments]="catchSegments()"
-          (wheelResult)="onCatchResult($event)"
-        />
-        <button class="btn-back" (click)="onBack()">← Back</button>
-      } @else {
-        <div class="catch-result">
-          <p>{{ catchingResult() }}</p>
-          @if (catchingResult() === 'Caught!') {
-            <img
-              class="catch-sprite"
-              [src]="enemyPkmn()?.pokemon?.sprites?.other?.['official-artwork']?.front_default || enemyPkmn()?.pokemon?.sprites?.front_default"
-              [alt]="enemyPkmn()?.pokemon?.name"
-            />
-          }
-        </div>
-      }
+      <div class="catch-overlay-content">
+        @if (catching()) {
+          <app-wheel
+            [catchSegments]="catchSegments()"
+            [hideButton]="true"
+            [size]="240"
+            (wheelResult)="onCatchResult($event)"
+          />
+          <div class="catch-counter">Poké Balls: {{ pokeballs() }}</div>
+          <div class="catch-buttons">
+            <button class="btn-launch" (click)="launchBall()"
+              [disabled]="pokeballs() === 0 || wheelSpinning()">
+              LAUNCH BALL
+            </button>
+            <button class="btn-exit" (click)="exitCapture()">EXIT</button>
+          </div>
+        } @else {
+          <div class="catch-result">
+            <p>{{ catchingResult() }}</p>
+            @if (catchingResult() === 'Caught!') {
+              <img
+                class="catch-sprite"
+                [src]="enemyPkmn()?.pokemon?.sprites?.other?.['official-artwork']?.front_default || enemyPkmn()?.pokemon?.sprites?.front_default"
+                [alt]="enemyPkmn()?.pokemon?.name"
+              />
+            }
+            <button class="btn-exit" (click)="exitCapture()">EXIT</button>
+          </div>
+        }
+      </div>
     </div>
   } @else {
     <div class="action-panel">
@@ -117,7 +129,7 @@
             <button class="btn-action btn-attack" (click)="onAttack()" [disabled]="busy()">
               <span class="btn-icon">&#9876;</span> ATTACK
             </button>
-            <button class="btn-action btn-capture" (click)="onCapture()" [disabled]="pokeballs() === 0 || busy()">
+            <button class="btn-action btn-capture" (click)="onCapture()" [disabled]="busy()">
               <span class="btn-icon pokeball-icon"></span> CAPTURE
             </button>
           </div>

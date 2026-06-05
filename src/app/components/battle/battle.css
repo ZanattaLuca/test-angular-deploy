@@ -325,11 +325,60 @@
 .btn-back:hover { color: #daa520; border-color: #daa520; }
 
 .catch-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.catch-overlay-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
+
+.catch-counter {
+  font-size: .95rem;
+  color: #aaa;
+  font-weight: bold;
+}
+
+.catch-buttons {
+  display: flex;
+  gap: .8rem;
+}
+
+.btn-launch {
+  padding: .6rem 1.5rem;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-launch:hover:not(:disabled) { transform: scale(1.05); }
+.btn-launch:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-exit {
+  padding: .6rem 1.5rem;
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #555;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-exit:hover { color: #fff; border-color: #fff; }
 
 .catch-result {
   text-align: center;

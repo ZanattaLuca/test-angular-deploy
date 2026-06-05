@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { BattleService, TypeDiceRoll } from '../../services/battle';
 import { PokemonService } from '../../services/pokemon.service';
 import { TYPE_COLORS } from '../../models/pokemon.model';
@@ -36,6 +36,8 @@ export class BattleComponent {
   readonly showCatchWheel = signal(false);
   readonly catchingResult = signal<string | null>(null);
   readonly catching = signal(false);
+  readonly wheelSpinning = signal(false);
+  readonly catchWheel = viewChild(WheelComponent);
 
   readonly dicePhase = signal<'hidden' | 'rolling' | 'revealed'>('hidden');
   readonly diceRolls = signal<TypeDiceRoll[] | null>(null);
@@ -164,8 +166,26 @@ export class BattleComponent {
   }
 
   onCapture(): void {
-    if (this.pokeballs() === 0 || this.busy()) return;
+    if (this.busy()) return;
     this.openCatch();
+  }
+
+  launchBall(): void {
+    if (this.pokeballs() === 0 || this.wheelSpinning()) return;
+    this.wheelSpinning.set(true);
+    const wheel = this.catchWheel();
+    if (wheel) wheel.spin();
+  }
+
+  exitCapture(): void {
+    const result = this.catchingResult();
+    if (result) {
+      this.battle.onPokeballResult(result === 'Caught!');
+    }
+    this.showCatchWheel.set(false);
+    this.catching.set(false);
+    this.catchingResult.set(null);
+    this.wheelSpinning.set(false);
   }
 
   onItem(): void {
@@ -181,9 +201,11 @@ export class BattleComponent {
   }
 
   onBack(): void {
-    this.battle.battleSubPhase.set('idle');
     this.showCatchWheel.set(false);
+    this.catching.set(false);
     this.catchingResult.set(null);
+    this.wheelSpinning.set(false);
+    this.battle.battleSubPhase.set('idle');
   }
 
   async switchTo(i: number): Promise<void> {
@@ -205,30 +227,20 @@ export class BattleComponent {
     const enemy = this.enemyPkmn();
     if (!enemy) return;
     const hpRemaining = 1 - enemy.currentHp / enemy.maxHp;
-    let segs = Math.round(
-      14 * hpRemaining * hpRemaining + 3 * hpRemaining + 1,
-    );
-    if (enemy.status) segs = 18;
-    segs = Math.min(20, Math.max(1, segs));
+    let segs = Math.round(hpRemaining * 10) + 1;
+    if (enemy.status) segs = 11;
+    segs = Math.min(12, Math.max(1, segs));
     this.catchSegments.set(segs);
     this.showCatchWheel.set(true);
     this.catching.set(true);
+    this.wheelSpinning.set(false);
+    this.catchingResult.set(null);
   }
 
   onCatchResult(success: boolean): void {
     this.catching.set(false);
+    this.wheelSpinning.set(false);
     this.catchingResult.set(success ? 'Caught!' : 'Escaped...');
-    if (success) {
-      setTimeout(async () => {
-        await this.battle.onPokeballResult(true);
-      }, 1200);
-    } else {
-      setTimeout(() => {
-        this.showCatchWheel.set(false);
-        this.catchingResult.set(null);
-        this.battle.onPokeballResult(false);
-      }, 1200);
-    }
   }
 
   onFleeCoinResult(success: boolean): void {
