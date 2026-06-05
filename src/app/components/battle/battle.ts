@@ -163,6 +163,11 @@ export class BattleComponent {
     );
   }
 
+  onCapture(): void {
+    if (this.pokeballs() === 0 || this.busy()) return;
+    this.openCatch();
+  }
+
   onItem(): void {
     this.battle.battleSubPhase.set('item');
   }
@@ -212,7 +217,7 @@ export class BattleComponent {
 
   onCatchResult(success: boolean): void {
     this.catching.set(false);
-    this.catchingResult.set(success ? 'Catturato!' : 'Sfuggito...');
+    this.catchingResult.set(success ? 'Caught!' : 'Escaped...');
     if (success) {
       setTimeout(async () => {
         await this.battle.onPokeballResult(true);

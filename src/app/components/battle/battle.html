@@ -95,11 +95,11 @@
           [catchSegments]="catchSegments()"
           (wheelResult)="onCatchResult($event)"
         />
-        <button class="btn-back" (click)="onBack()">← Annulla</button>
+        <button class="btn-back" (click)="onBack()">← Back</button>
       } @else {
         <div class="catch-result">
           <p>{{ catchingResult() }}</p>
-          @if (catchingResult() === 'Catturato!') {
+          @if (catchingResult() === 'Caught!') {
             <img
               class="catch-sprite"
               [src]="enemyPkmn()?.pokemon?.sprites?.other?.['official-artwork']?.front_default || enemyPkmn()?.pokemon?.sprites?.front_default"
@@ -113,22 +113,19 @@
     <div class="action-panel">
       @if (subPhase() === 'idle') {
         <div class="action-buttons">
-          <button class="btn-action btn-attack" (click)="onAttack()" [disabled]="busy()">Attacca</button>
-          <button
-            class="btn-action"
-            (click)="onItem()"
-            [disabled]="pokeballs() === 0 || busy()"
-          >
-            Strumenti
-          </button>
-          <button
-            class="btn-action"
-            (click)="onPokemon()"
-            [disabled]="team().length <= 1 || busy()"
-          >
-            Pokémon
-          </button>
-          <button class="btn-action btn-flee" (click)="onFlee()" [disabled]="busy()">Fuga</button>
+          <div class="action-row">
+            <button class="btn-action btn-attack" (click)="onAttack()" [disabled]="busy()">
+              <span class="btn-icon">&#9876;</span> ATTACK
+            </button>
+            <button class="btn-action btn-capture" (click)="onCapture()" [disabled]="pokeballs() === 0 || busy()">
+              <span class="btn-icon pokeball-icon"></span> CAPTURE
+            </button>
+          </div>
+          <div class="action-row action-row-three">
+            <button class="btn-action" (click)="onPokemon()" [disabled]="team().length <= 1 || busy()">POKEMON</button>
+            <button class="btn-action" (click)="onItem()" [disabled]="busy()">ITEMS</button>
+            <button class="btn-action btn-run" (click)="onFlee()" [disabled]="busy()">RUN</button>
+          </div>
         </div>
       }
 
@@ -139,18 +136,14 @@
             [disabled]="false"
             (coinFlipped)="onFleeCoinResult($event)"
           />
-          <button class="btn-back" (click)="onBack()">← Annulla</button>
+          <button class="btn-back" (click)="onBack()">← Back</button>
         </div>
       }
 
       @if (subPhase() === 'item') {
         <div class="sub-panel">
-          @if (pokeballs() > 0) {
-            <button class="btn-item" (click)="openCatch()">
-              Poké Ball (x{{ pokeballs() }})
-            </button>
-          }
-          <button class="btn-back" (click)="onBack()">← Indietro</button>
+          <p class="no-items">No items available</p>
+          <button class="btn-back" (click)="onBack()">← Back</button>
         </div>
       }
 
@@ -169,7 +162,7 @@
             </button>
           }
           @if (!switchAfterFaint()) {
-            <button class="btn-back" (click)="onBack()">← Indietro</button>
+            <button class="btn-back" (click)="onBack()">← Back</button>
           }
         </div>
       }

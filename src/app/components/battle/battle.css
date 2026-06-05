@@ -190,9 +190,19 @@
 }
 
 .action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.action-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: .5rem;
+}
+
+.action-row-three {
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .btn-action {
@@ -205,6 +215,10 @@
   font-weight: bold;
   cursor: pointer;
   transition: .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
 }
 
 .btn-action:hover:not(:disabled) {
@@ -219,7 +233,37 @@
 
 .btn-attack:hover:not(:disabled) { border-color: #e74c3c; }
 
-.btn-flee:hover:not(:disabled) { border-color: #e74c3c; }
+.btn-capture:hover:not(:disabled) { border-color: #3498db; }
+
+.btn-run:hover:not(:disabled) { border-color: #e74c3c; }
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+.pokeball-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #e74c3c 0%, #e74c3c 48%, #333 48%, #333 52%, #fff 52%, #fff 100%);
+  border: 2px solid #333;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pokeball-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid #333;
+}
 
 .sub-panel {
   display: flex;
@@ -259,6 +303,13 @@
 .switch-name { text-transform: capitalize; font-weight: bold; }
 .switch-level { font-size: .8rem; color: #888; }
 .switch-hp { font-size: .75rem; color: #666; }
+
+.no-items {
+  text-align: center;
+  color: #666;
+  font-size: .85rem;
+  padding: .5rem 0;
+}
 
 .btn-back {
   padding: .4rem 1rem;
